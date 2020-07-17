@@ -1,18 +1,14 @@
-
 from Core.ViewProces import *
+
+
+def process_test():
+    _process = ViewProces()
+    _process.proces1()
+    count, all_process, _ls = _process.find_process('chrome.exe')
+    print("  кол-во запущенных программ {} ".format(count))
+    for i, it in enumerate(all_process):
+        print(" {}   {}".format(i, it))
+
 
 if __name__ == "__main__":
     print("Start Convert")
-    _process = ViewProces()
-    _process.proces1()
-#    _ls = _process.find_process("chrome.exe")
-    _ls = _process.find_process('SortDirStream.exe')
-    print("  кол-во запущенных программ {} ".format(len(_ls)))
-    for i, it in enumerate(_ls):
-        print(" {}   {}".format(i, it))
-    k=1
-    _sls = set(_ls)
-    _ls = list(_sls)
-    print("----  кол-во запущенных программ {} ".format(len(_ls)))
-    for i, it in enumerate(_ls):
-        print(" {}   {}".format(i, it))

@@ -13,7 +13,7 @@ class ViewProces:
     def find_process(self, maska, type_duplicate = True):
         import psutil # pip install psutil
         proc_name = maska
-        ls = []
+        all_process = []
         for proc in psutil.process_iter():
             # Пока скрипт работает, процесс уже может перестать существовать
             # (поскольку между psutil.process_iter() и proc.name() проходит время)
@@ -25,10 +25,12 @@ class ViewProces:
             else:
                 if proc_name_in_loop == proc_name:
                    _s = proc.exe()  # print(proc.cwd()) #<-- значение коммандной строки
-                   ls += [_s]
+                   all_process += [_s]
+
+        count = len(all_process)
 
         if type_duplicate:
-            _sls = set(ls)
-            ls = list(_sls)
+            _sls = set(all_process)
+            path_start_process = list(_sls)
 
-        return ls
+        return count, all_process, path_start_process
