@@ -4,14 +4,13 @@ class ConfigDan:
     def __init__(self, **kwargs):
         print("  --- class ConfigDan --")
 
-        path0 = self.os.getcwd()
-        self.path_file_name_config = self.__test_json(kwargs.get("PathConfig", path0+"\\mlserver.json"))   # path config
+        self.path_file_name_config = self.__test_json(kwargs.get("PathConfig", self.os.getcwd()+"\\mlserver.json"))   # path config
 
         self.all_config = self.read(self.path_file_name_config)
 
         self.car_name = kwargs.get("Car name", "")                                          # name car
 
-        self.clexport, self.lrf_dec, self.config_car = dict(), dict(), dict()
+        self.clexport, self.lrf_dec, self._config_car = dict(), dict(), dict()
 
         self.set(self.car_name)
 
@@ -24,7 +23,6 @@ class ConfigDan:
             k = file.index(".json") > 0
         except:
             file = file + ".json"
-        return file
 
     def read(self, file):
         self.all_config = {}
@@ -50,9 +48,9 @@ class ConfigDan:
 
         if "Car name" in self.all_config:       # проверка существует ли в конфигурации раздел Car name
 
-            self.config_car = self.all_config["Car name"]
-            if car_name in self.config_car:
-                _config = self.config_car[car_name]
+            self._config_car = self.all_config["Car name"]
+            if car_name in self._config_car:
+                _config = self._config_car[car_name]
                 __set_default(self, _config)
 
         else:

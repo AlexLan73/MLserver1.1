@@ -12,4 +12,3 @@ def process_test():
 
 if __name__ == "__main__":
     print("Start Convert")
-    process_test()
