@@ -4,8 +4,9 @@ class ConfigDan:
     def __init__(self, **kwargs):
         print("  --- class ConfigDan --")
 
-        _path_file_name_config = kwargs.get("PathConfig", self.os.getcwd()+"\\+mlserver.json")   # path config
-        self.all_config = self.read(_path_file_name_config)
+        self.path_file_name_config = self.__test_json(kwargs.get("PathConfig", self.os.getcwd()+"\\mlserver.json"))   # path config
+
+        self.all_config = self.read(self.path_file_name_config)
 
         self.car_name = kwargs.get("Car name", "")                                          # name car
 
@@ -17,12 +18,16 @@ class ConfigDan:
         with open(path, 'w') as f:
             f.write(self.json.dumps(dan_json))
 
-    def read(self, file):
-        self.all_config = {}
+    def __test_json(self, file):
         try:
             k = file.index(".json") > 0
         except:
             file = file + ".json"
+
+    def read(self, file):
+        self.all_config = {}
+
+        file = self.__test_json(file)
 
         if self.os.path.isfile(file):
             with open(file, 'r') as json_file:
