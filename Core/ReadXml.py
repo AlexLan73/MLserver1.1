@@ -2,35 +2,6 @@ import logging
 from pprint import pprint
 from Core.ReadWrite import *
 
-
-def convert_to_ini(**kwargs):
-    logger = logging.getLogger("exampleApp.ReadXml.convert_to_ini")
-    logger.info(" Разбор ini файла ")
-
-    dan = kwargs.get("dan", {})
-    dan_err = kwargs.get("dan_err", {})
-    path = kwargs.get("path", "")
-    s = ""
-    if len(dan) <= 0:
-        logger.critical(" нет словоря с данными  для конвертации ")
-        return s
-
-    if len(dan_err) > 0:
-        for key, val in dan_err.items():
-            del dan[key]
-    i = 1
-    for key, val in dan.items():
-        s += "[DB{}] \n".format(i)
-        s += "Path=" + path + "\\" + val["path"] + "\n"
-        s += "Network=" + val["type"] + "\n"
-        s += "Bus=" + val["bustype"] + "\n"
-        s += "Channels=" + val["channel"] + "\n"
-        i += 1
-    #        print(s)
-    logger.info(" convert_to_ini отработал ")
-    return s
-
-
 class ReadXml:
     import copy, os
 
@@ -151,3 +122,30 @@ class ReadXml:
         else:
             logger.info(" Системная переменная MLSERVER -> путь к каталогу - прописана ")
         return self._mlserver
+
+    def convert_to_ini(self, **kwargs):
+        logger = logging.getLogger("exampleApp.ReadXml.convert_to_ini")
+        logger.info(" Разбор ini файла ")
+
+        dan = kwargs.get("dan", {})
+        dan_err = kwargs.get("dan_err", {})
+        path = kwargs.get("path", "")
+        s = ""
+        if len(dan) <= 0:
+            logger.critical(" нет словоря с данными  для конвертации ")
+            return s
+
+        if len(dan_err) > 0:
+            for key, val in dan_err.items():
+                del dan[key]
+        i = 1
+        for key, val in dan.items():
+            s += "[DB{}] \n".format(i)
+            s += "Path=" + path + "\\" + val["path"] + "\n"
+            s += "Network=" + val["type"] + "\n"
+            s += "Bus=" + val["bustype"] + "\n"
+            s += "Channels=" + val["channel"] + "\n"
+            i += 1
+        #        print(s)
+        logger.info(" convert_to_ini отработал ")
+        return s

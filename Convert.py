@@ -12,23 +12,26 @@ from Core.ConfigDan import *
 from Core.StatDan import *
 from Core.DopConfig import *
 from Core.ReadXml import *
+from Core.LrfDec import *
+from Core.CountInitialData import *
+
 
 # pyinstaller -F Convert.py
 
 def inicial_logging():
-    _path_log = StatDan.read("path_work")+"\\LOG"
+    _path_log = StatDan.__getItem__("path_work") + "\\LOG"
 
     if not (os.path.isdir(_path_log)):
         os.mkdir(_path_log)
 
     dictLogConfig = logging_dict(_path_log)
     path_file_logger = dictLogConfig['handlers']["fileHandler"]["filename"]
-    StatDan.add("path_file_logger", path_file_logger)
+    StatDan.__setItem__("path_file_logger", path_file_logger)
 
     logging.config.dictConfig(dictLogConfig)
     logger = logging.getLogger("exampleApp")
     logger.info("START")
-    StatDan.add("logger", logger)
+    StatDan.__setItem__("logger", logger)
 
 
 def process_test():
@@ -52,23 +55,48 @@ if __name__ == "__main__":
     _inArguments = InArguments()
     args = _inArguments(error_run)
 
-    StatDan.add("path_work", args["dir_work"])
-    StatDan.add("dir_start", args["dir_start"])
+    # StatDan.add("path_work", args["dir_work"])
+    # StatDan.add("dir_start", args["dir_start"])
+    StatDan.__setItem__("path_work", args["dir_work"])
+    StatDan.__setItem__("dir_start", args["dir_start"])
+    StatDan.__setItem__("is_lrf", args[False])
+
+
+    _countInitialData = CountInitialData(StatDan.__getItem__("path_work"))
+    _is_rename = False  #  True переименовать файлы False
+    if _is_rename:
+        _countInitialData.rename()
+        sys.exit(0)
+
+
+#    _countInitialData.test_null()
+#    _countInitialData.call()
+#    _countInitialData.del_initial_data()
+
 
     inicial_logging()
-    logger = StatDan.read("logger")
+    logger = StatDan.__getItem__("logger")
 
-    _config = ConfigDan(PathConfig = StatDan.read("path_work")+"\\mlserver.json")
-    _rw = ReadWrite(PathWork = StatDan.read("path_work"))
+    _rw = ReadWrite(PathWork= StatDan.__getItem__("path_work"))
+
+    _config = ConfigDan(PathConfig= StatDan.__getItem__("path_work") + "\\mlserver.json")
 
     _dop_config = DopConfig(_rw)
+    _config.set(_dop_config.CarName)
+
 
     _readxml = ReadXml(_dop_config.path_common, _dop_config.dir_analysis)
 
+    StatDan.__setItem__("path_commonт", _dop_config.path_common)
+
+    _infdec  = LrfDec(_config.lrf_dec)
+    _infdec.run()
+
 
     logger.info("END нормальное завершение программы")
-    k=1
 
+
+    k = 1
 
 #
 # def set_dir(rwserver, config):

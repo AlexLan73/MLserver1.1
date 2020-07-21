@@ -11,12 +11,10 @@ class DopConfig:
         self.path_work = self._rw.path_work
         self.path_common = self.find_common( self.path_work, "#COMMON")
         self.path_lrf_dec = self.path_common + "\\DLL\\lrf_dec.exe"
-        self.name_car = ""
+        self.CarName = ""
 
         self.name_config = self.file_config_from_ml_rt()
         self.path_name_Configuration(self.name_config[0])
-
-        k=1
 
     def find_common(self, path, _find):
         logger = logging.getLogger("exampleApp.ReadWriteMLserver.find_common")
@@ -74,7 +72,8 @@ class DopConfig:
                 _ls[1] = _s[_i+2:]
         except:
             pass
-
+        _CarName = [x for x in ls if "CarName" in x]
+        self.CarName =_CarName[0].split("=")[1]
         return _ls
 
         _s = "В каталоге {} нет файла ml_rt.ini".format(self.path_sourse)
@@ -133,8 +132,8 @@ class DopConfig:
         print("   найдено -> ", name_file_analysis_zip)
 
         if name_file_analysis_zip == "":
-            print("Нет файла с расширением  analysis.zipanalysis.zip ")
-            logger.critical("Нет файла с расширением  analysis.zipanalysis.zip ")
+            print("Нет файла с расширением  analysis ")
+            logger.critical("Нет файла с расширением  analysis ")
 
             self.sys.exit(-5)
 
