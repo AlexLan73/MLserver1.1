@@ -1,8 +1,16 @@
+#from Core.StatDan import *
+
+import logging
+
 class ConfigDan:
+
     import os, json, copy
 
     def __init__(self, **kwargs):
         print("  --- class ConfigDan --")
+        logger = logging.getLogger("exampleApp.ConfigDan.__init__")
+        logger.info(" - загрузка конфигурации")
+
 
         self.path_file_name_config = self.__test_json(kwargs.get("PathConfig", self.os.getcwd()+"\\mlserver.json"))   # path config
 
@@ -41,6 +49,8 @@ class ConfigDan:
         return self.all_config
 
     def set(self, car_name):
+        logger = logging.getLogger("exampleApp.ConfigDan.set")
+
         def __set_default(self, config):
             self.clexport = self.copy.deepcopy(config.get("clexport", {
                 "MDF": " -v -~ -o -t -l \"file_clf\" -MB -O  \"my_dir\" SystemChannel=Binlog_GL.ini"
@@ -48,11 +58,12 @@ class ConfigDan:
             self.lrf_dec = self.copy.deepcopy(config.get("lrf_dec", " -S 20 -L 512 -n -k -v -i "))
 
         if "Car name" in self.all_config:       # проверка существует ли в конфигурации раздел Car name
-
             self.config_car = self.all_config["Car name"]
             if car_name in self.config_car:
                 _config = self.config_car[car_name]
                 __set_default(self, _config)
+                logger.info(" - загрузка конфигурации под конкретную машину - {} ".format(car_name))
 
         else:
             __set_default(self, self.all_config)
+            logger.info(" - загрузка общей конфигурации ")
