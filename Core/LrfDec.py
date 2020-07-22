@@ -15,6 +15,7 @@ class LrfDec(threading.Thread):
 #        self.logger.info(" Разбор ini файла ")
         self.path_work = StatDan.__getItem__("path_work")
         StatDan.__setItem__("lrf_error", 0)
+        StatDan.__setItem__("is_lrf", True)
 
         self._countInitialData = CountInitialData(self.path_work)
         self.path_common = StatDan.__getItem__("path_commonт")
@@ -130,14 +131,14 @@ class LrfDec(threading.Thread):
 
     # - - - - - - -
     def run(self):
-        StatDan.__setItem__("is_lrf", args[True])
+        StatDan.__setItem__("is_lrf", True)
 
         while self._countInitialData.call() > 0:
             if self._countInitialData.count_repit >4:
                 self.logger.warning("  кол-во циклов обработки исходных данных привысило 3")
                 self.logger.warning("  кол-во данных не уменьшается")
                 return
-
+            print("  -- нужно обработать {}  файлов ".format(self._countInitialData.count))
             self.__run__lrf_dec()  # запускаем программу конвертации
 
             __ls = self._rw.ReadText(self.log_file_clf)
@@ -146,46 +147,20 @@ class LrfDec(threading.Thread):
             __dir_file_handling01, __file_error = self.__filtr_log(__ls)
 
             self.logger.info(" Обработанные данные переименновываем, добавляем ~ к имени файла  ")
-#            self.__convert_files(__dir_file_handling01)
+            self.__convert_files(__dir_file_handling01)
 
             _error =  self.__test_messange(__file_error)
             if _error < 0:
                 StatDan.__setItem__("lrf_error", _error)
-                StatDan.__setItem__("is_lrf", args[False])
+                StatDan.__setItem__("is_lrf", False)
+                self.logger.warning("  LrfDec завершено с ошибкой ")
+
                 return _error
 
-        StatDan.__setItem__("is_lrf", args[False])
+        self.logger.info("  LrfDec завершено Ok! ")
+        StatDan.__setItem__("is_lrf", False)
         StatDan.__setItem__("lrf_error", 0)
         return  0
-
-
-#------------------------------------------------------------------
-
-            # if len(_files) > 0:
-            #     __index_clf += 1
-            #     self.logger.info(" Копирование сформированных файлов  *.clf в каталог CLF ")
-            #     __copy_files(self, _files, __index_clf)
-
-            # Проверить наличие фразы
-
-
-
-        # self.test_messange(self, __ls0)
-        #
-        #     __count_convert = __count_file_convert(self)
-        #     _info = "  ===> необходимо конвертировать в clf {}  файлов ".format(__count_convert)
-        #     print(_info)
-        #     self.logger.info(_info)
-        #
-        #     if __count_convert <= 0:
-        #         _files = [self._rws.path_sourse + "\\" + x for x in self.os.listdir() if ".clf" in x]
-        #         self.logger.info(" Копирование сформированных файлов  *.clf в каталог CLF ")
-        #         __copy_files(self, _files, __index_clf)
-        #         __info = "End of the processing lrf_dec.exe"
-        #         print(__info)
-        #         self.logger.info(__info)
-
-
 
     # ==========  ERROR PROG  ====================================+
     def _error_prog(self, kode):
@@ -255,27 +230,3 @@ class LrfDec(threading.Thread):
 # EC_Conf 	    55 	The device does not contain a valid configuration.
 # EC_Compile 	56 	During compilation of the configuration an error occurred.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# class ModelNW(threading.Thread):
-#
-#     confignet=ConfigNet()
-#     history={}
-#
-#     def __init__(self, x0, y0, cnet):
-#         threading.Thread.__init__(self)

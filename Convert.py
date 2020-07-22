@@ -3,6 +3,7 @@ import time
 import os, sys
 import logging
 import logging.config
+import time
 
 from Core.ReadWrite import *
 from Core.ViewProces import *
@@ -14,8 +15,8 @@ from Core.DopConfig import *
 from Core.ReadXml import *
 from Core.LrfDec import *
 from Core.CountInitialData import *
-
-
+from Core.ConvertCLF import *
+from Core.CLFJson import *
 # pyinstaller -F Convert.py
 
 def inicial_logging():
@@ -59,8 +60,13 @@ if __name__ == "__main__":
     # StatDan.add("dir_start", args["dir_start"])
     StatDan.__setItem__("path_work", args["dir_work"])
     StatDan.__setItem__("dir_start", args["dir_start"])
-    StatDan.__setItem__("is_lrf", args[False])
+    StatDan.__setItem__("is_lrf", False)
+    StatDan.__setItem__("is_convert_clf", False)
 
+    _clf_json = CLFJson(StatDan.__getItem__("path_work") + "\\clf.json")
+    StatDan.__setItem__("iclf_json", _clf_json)
+
+    _convertCLF = ConvertCLF()
 
     _countInitialData = CountInitialData(StatDan.__getItem__("path_work"))
     _is_rename = False  #  True переименовать файлы False
@@ -90,7 +96,17 @@ if __name__ == "__main__":
     StatDan.__setItem__("path_commonт", _dop_config.path_common)
 
     _infdec  = LrfDec(_config.lrf_dec)
-    _infdec.run()
+#    _infdec.run()
+    _infdec.start()
+    _convertCLF = ConvertCLF()
+
+    i=-1
+    while StatDan.__getItem__("is_lrf"):
+        i+=1
+        print(" {} -----".format(i))
+        time.sleep(1)
+
+    k=1
 
 
     logger.info("END нормальное завершение программы")
