@@ -38,7 +38,6 @@ class ConvertCLF(threading.Thread):
         self.logger.info("   данные из " + self.path_work)
 
         self._name_file_datax_clf = self.glob.glob( self.path_work+"\\*.clf")
-        k=1
 
     def __test__files_clf(self):
         # модуль для теста файлов сформированные clf

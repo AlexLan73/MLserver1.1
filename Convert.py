@@ -17,7 +17,7 @@ from Core.LrfDec import *
 from Core.CountInitialData import *
 from Core.ConvertCLF import *
 from Core.CLFJson import *
-
+from Core.ALLClexport import *
 
 # pyinstaller -F Convert.py
 
@@ -77,7 +77,7 @@ if __name__ == "__main__":
 
     _rw = ReadWrite(PathWork=StatDan.__getItem__("path_work"))
 
-    _config = ConfigDan(PathConfig=StatDan.__getItem__("path_work") + "\\mlserver.json")
+    _config = ConfigDan(PathConfig=StatDan.__getItem__("dir_start") + "\\mlserver.json")
 
     _dop_config = DopConfig(_rw)
     _config.set(_dop_config.CarName)
@@ -108,6 +108,7 @@ if __name__ == "__main__":
     if _countInitialData.count <= 0:
         _countInitialData.del_initial_data()
 
+    _clexport =  ALLClexport(_config.clexport, _readxml.siglog_config_basa)
 
     k = 1
 
