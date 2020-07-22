@@ -17,6 +17,8 @@ from Core.LrfDec import *
 from Core.CountInitialData import *
 from Core.ConvertCLF import *
 from Core.CLFJson import *
+
+
 # pyinstaller -F Convert.py
 
 def inicial_logging():
@@ -56,8 +58,6 @@ if __name__ == "__main__":
     _inArguments = InArguments()
     args = _inArguments(error_run)
 
-    # StatDan.add("path_work", args["dir_work"])
-    # StatDan.add("dir_start", args["dir_start"])
     StatDan.__setItem__("path_work", args["dir_work"])
     StatDan.__setItem__("dir_start", args["dir_start"])
     StatDan.__setItem__("is_lrf", False)
@@ -66,65 +66,52 @@ if __name__ == "__main__":
     _clf_json = CLFJson(StatDan.__getItem__("path_work") + "\\clf.json")
     StatDan.__setItem__("iclf_json", _clf_json)
 
-    _convertCLF = ConvertCLF()
-
     _countInitialData = CountInitialData(StatDan.__getItem__("path_work"))
-    _is_rename = False  #  True переименовать файлы False
+    _is_rename = False  # True переименовать файлы False
     if _is_rename:
         _countInitialData.rename()
         sys.exit(0)
 
-
-#    _countInitialData.test_null()
-#    _countInitialData.call()
-#    _countInitialData.del_initial_data()
-
-
     inicial_logging()
     logger = StatDan.__getItem__("logger")
 
-    _rw = ReadWrite(PathWork= StatDan.__getItem__("path_work"))
+    _rw = ReadWrite(PathWork=StatDan.__getItem__("path_work"))
 
-    _config = ConfigDan(PathConfig= StatDan.__getItem__("path_work") + "\\mlserver.json")
+    _config = ConfigDan(PathConfig=StatDan.__getItem__("path_work") + "\\mlserver.json")
 
     _dop_config = DopConfig(_rw)
     _config.set(_dop_config.CarName)
 
+    _clf_json.set("Logger", _dop_config.NameLogger)
+    _clf_json.write_json()
 
     _readxml = ReadXml(_dop_config.path_common, _dop_config.dir_analysis)
 
     StatDan.__setItem__("path_commonт", _dop_config.path_common)
 
-    _infdec  = LrfDec(_config.lrf_dec)
-#    _infdec.run()
-    _infdec.start()
+    _infdec = LrfDec(_config.lrf_dec)
     _convertCLF = ConvertCLF()
 
-    i=-1
+    _infdec.start()  # _infdec.run()
+
+    _convertCLF.start()  # _convertCLF.run1()
+
+    i = -1
     while StatDan.__getItem__("is_lrf"):
-        i+=1
-        print(" {} -----".format(i))
+        i += 1
+        print(" {} -- * - * - * -".format(i))
         time.sleep(1)
 
-    k=1
+    _convertCLF.join()
 
-
-    logger.info("END нормальное завершение программы")
+    _countInitialData.call()
+    if _countInitialData.count <= 0:
+        _countInitialData.del_initial_data()
 
 
     k = 1
 
-#
-# def set_dir(rwserver, config):
-#     name_config = rwserver.file_config_from_ml_rt()
-#     rwserver.path_name_Configuration(name_config[0])
-#
-#     maska_zip = "Analysis.gla"
-#     d0, d_err = rwserver.read_xml_dan(rwserver.dir_analysis+"\\"+maska_zip)
-#     s = rwserver.convert_to_ini(dan=d0, dan_err=d_err, path=rwserver.dir_analysis)
-#
-#     siglog_config_basa = rwserver.ReadTextBasa0(rwserver.path_common+"\\DLL\\"+"siglog_config.ini")
-#     siglog_config_basa+=[s]
-#     rwserver.copy_to_dir(siglog_config_basa)
-#
-#     rwserver.copy_siglog_vsysvar(d_err)
+    logger.info("END нормальное завершение программы")
+
+    k = 1
+

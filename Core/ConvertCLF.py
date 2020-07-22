@@ -1,44 +1,104 @@
 from Core.CountInitialData import *
 import threading
-import logging
+
+
 from Core.StatDan import *
 from Core.ReadWrite import *
 
 
 class ConvertCLF(threading.Thread):
-    import os, sys, copy, glob, json
+    import os, sys, copy, glob, json, time
     from subprocess import Popen, PIPE, STDOUT
+    import logging
 
     def __init__(self):
         threading.Thread.__init__(self)
-        self.logger = logging.getLogger("exampleApp.LrfDec.__init__")
-#        self.logger.info(" Разбор ini файла ")
+
+        self.logger = self.logging.getLogger("exampleApp.ConvertCLF.__init__")
+
         self.path_work = StatDan.__getItem__("path_work")
-        StatDan.__setItem__("ConvertCLF_error", 0)
         self.path_common = StatDan.__getItem__("path_commonт")
 
         self.path_clf = self.path_work+"\\CLF"
         self._rw = ReadWrite()
         self._rw.make_dir(self.path_clf)
 
+        StatDan.__setItem__("ConvertCLF_error", 0)
+
         self._clf_json = StatDan.__getItem__("iclf_json")
+        self._all_file =self._clf_json.read_json()
 
+        self.logger.info("   программа создает clf.json c информацией из *.clf ")
 
+        self._exe = self.path_common + "\\DLL\\FileType.exe"
+
+        self.log_file = self.path_work+"\\LOG\\Log_FileType.log"
+
+        self.logger.info("   запускаем программу " + self._exe)
+        self.logger.info("   данные из " + self.path_work)
+
+        self._name_file_datax_clf = self.glob.glob( self.path_work+"\\*.clf")
         k=1
 
+    def __test__files_clf(self):
+        # модуль для теста файлов сформированные clf
+        # если программа работает (формирования) то берем все кроме -1
+
+        _name_file_datax_clf = self.glob.glob( self.path_work+"\\*.clf")
+        if StatDan.__getItem__("is_lrf"):
+            _name_file_datax_clf = _name_file_datax_clf[:-1]
+        return _name_file_datax_clf
+
+    def run1(self):
+
+        while self.__count_files > 0:
+            #  две строчки нужны для синхронизации с обычным режимом
+            self._name_file_datax_clf = self.__test__files_clf()
+            self.__count_files = len(self._name_file_datax_clf)
+
+            for it in self._name_file_datax_clf:
+                print(" ------   {} <<<====".format(it))
+                __dan_clf = self.run_clf_text(it)
+                self._all_file[it] = self.copy.deepcopy(__dan_clf)
+                file1 = self.path_clf+"\\"+__dan_clf["rename clf"][1]
+
+                self._clf_json.set_all(self._all_file)
+                self._clf_json.write_json()
+                k0 = -1
+                error = -1
+                while k0 < 20 and error < 0:
+                    error= self._rw.rename_file(it, file1)
+                    if error == 0:
+                        self.logger.info(" переименовал в файл {} ".format(file1))
+                    else:
+                        k0+=1
+                        self.logger.warning("  проблема с переносом файла в {} ".format(file1))
+                        self.time.sleep(0.1)
+
+            self._name_file_datax_clf = self.__test__files_clf()
+            self.__count_files = len(self._name_file_datax_clf)
+
+
+
     def run(self):
-        pass
+        self.__count_files = 0
+        while (StatDan.__getItem__("is_lrf")) or (self.__count_files > 0):
+            self._name_file_datax_clf = self.__test__files_clf()
+            self.__count_files = len(self._name_file_datax_clf)
+            self.run1()
 
 
-#*******************************
+            # self._name_file_datax_clf = self.glob.glob( self.path_work+"\\*.clf")
+            #
+            # files = self.glob.glob(self.path_work +"\\*.clf")
+            # for it in files:
+            #     print(" ------   {} <<<====".format(it))
+            # self.time.sleep(1)
 
 
-    def run_clf_text(self):
-        __dan_clf = dict()
-        logger = logging.getLogger("exampleApp.RunProgram.run_clf_text")
-        logger.info(" start function run_clf_text")
-        logger.info("   программа создает clf.json c информацией из *.clf ")
-
+    #***********  run_clf_text  ********************
+    def run_clf_text(self, file):
+        __dan_clf = {}
         def __data_time_convert(self, s: str):
             s1 = s.strip().replace(".", "-").split(" ")
             s01 = s1[0].split("-")
@@ -56,7 +116,7 @@ class ConvertCLF(threading.Thread):
 
             p = self.Popen(_param, stdout=self.PIPE, stderr=self.STDOUT, bufsize=1)
 
-            with p.stdout, open(self._rws.log_file, 'ab') as file:
+            with p.stdout, open(self.log_file, 'ab') as file:
                 for line in iter(p.stdout.readline, b''):
                     print(line),
                     file.write(line)
@@ -148,28 +208,16 @@ class ConvertCLF(threading.Thread):
 
             return __dan_clf
 
-        self._rws.cd(self._rws.path_sourse)
-        _exe = self._rws.path_common + "\\DLL\\FileType.exe"
-        __path_clf = self._rws.path_sourse + "\\CLF\\"
-        logger.info("   запускаем программу " + _exe)
-        logger.info("   данные из " + __path_clf)
-
-        self._name_file_datax_clf = self.copy.deepcopy([x for x in self.os.listdir(__path_clf) if ".clf" in x])
-        _all_file = {}
-        if len(self._name_file_datax_clf) > 0:
-            for it in self._name_file_datax_clf:
-                _param = _exe + " -v " + __path_clf + it
-                __dan_clf = {}
-                __i = it.index(".clf")
-                __name_file = it[:__i]
-                __dan_clf = __convert(self, _param, __name_file + ".clf")
-                _all_file[__name_file] = self.copy.deepcopy(__dan_clf)
-                __info = " convert FileType name file -> {}".format(it)
-                print(__info)
-                logger.info(__info)
-
-            self._rws.save_json(self._rws.path_sourse + "\\clf.json", _all_file)
-        logger.info("   информация была сконвертирована и записана в clf.json ")
+        _param = self._exe + " -v " +  file
+        __dan_clf = {}
+        __i = file.index(".clf")
+#        __name_file = file[:__i]
+        __dan_clf = __convert(self, _param, file)
+        __info = " convert FileType name file -> {}".format(file)
+        print(__info)
+        self.logger.info(__info)
+        self.logger.info("   информация была сконвертирована и записана в clf.json ")
+        return __dan_clf
 
     # ==========  RENAMES_CLF ====================================+
     def rename_files(self):

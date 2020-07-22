@@ -14,6 +14,7 @@ class DopConfig:
         self.CarName = ""
 
         self.name_config = self.file_config_from_ml_rt()
+        self.NameLogger = self.name_config[0]
         self.path_name_Configuration(self.name_config[0])
 
     def find_common(self, path, _find):

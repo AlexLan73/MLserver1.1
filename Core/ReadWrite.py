@@ -86,3 +86,21 @@ class ReadWrite:
         import pickle
         with open(self.__test_name_picle(name), 'rb') as f:
             return pickle.load(f)
+
+    def rename_file(self, path0, path1):
+        if self.os.path.isfile(path0):
+            try:
+                with open(path0) as f:
+                        pass
+
+                self.os.rename(path0, path1)
+                return 0
+            except:
+                print(" - файл {}  занят другой программой или не сущест ".format(path0))
+                # self.logger.warning(" - файл {}  занят другой программой или не сущест ".format(path0))
+                return -1
+
+        else:
+            # self.logger.warning(" - файл {} не существует ".format(path0))
+            print(" - файл {} не существует ".format(path0))
+            return -1
