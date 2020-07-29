@@ -70,8 +70,7 @@ class ALLClexport(threading.Thread):
 
         # загружаем функции для потока
         for key, val in  self._key_prog.items():
-            if "MDF" in key:
-                self._key_prog[key] = ClexportXX(key, self.config_export[key], self.queve)
+            self._key_prog[key] = ClexportXX(key, self.config_export[key], self.queve)
 
         # запускаем поток
         for key, val in  self._key_prog.items():

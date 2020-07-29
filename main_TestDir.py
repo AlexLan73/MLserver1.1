@@ -189,7 +189,7 @@ if __name__ == "__main__":
 
     info = dict()
 
-    executor = ThreadPoolExecutor(max_workers=5)
+    executor = ThreadPoolExecutor(max_workers=10)
 
     while config_dir["is_read_files"]:
         if queve_dir.empty():
@@ -218,35 +218,3 @@ if __name__ == "__main__":
 
     is_convert = False
     l = 1
-#    basa=[]
-
-#    z = uuid.uuid1()
-#    print(z, type(z))
-#    print(str(z))
-
-#    is_new_file_clf = True
-
-# while is_new_file_clf:
-#     __new_files =list(set(glob.glob(path_clr_files)) - set(basa))             # файлы которые нужно добавить к запуску
-#     if len(__new_files) >0:
-#         print("*"*60)
-#         for it_file in __new_files:
-#             _id = uuid.uuid1()
-#             _info = dict()
-#             _info["file_clf"] = it_file
-#             _info["file_log"] = copy.deepcopy(path_clr_log_file_mask.replace("maskalog",str(_id)))
-#             _info["process"] = -1
-#             _info["error"] = 0
-#             pprint.pprint(_info, width=1)
-#             info[_id]=copy.deepcopy(_info)
-#             pprint.pprint(info, width=1)
-#
-#         basa.extend(__new_files)
-#         print(*basa, sep='\n')
-#         k=1
-#     time.sleep(0.2)
-
-
-# id_info = dict( "file_clf" = "...", "file_log" = "...", "process" = -1, "error" = 0, )
-#        self.info=dict(  "id":id_info)
-#        self.info=dict(id=dict())
