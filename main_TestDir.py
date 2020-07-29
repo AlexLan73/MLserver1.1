@@ -189,7 +189,7 @@ if __name__ == "__main__":
 
     info = dict()
 
-    executor = ThreadPoolExecutor(max_workers=10)
+    executor = ThreadPoolExecutor(max_workers=5)
 
     while config_dir["is_read_files"]:
         if queve_dir.empty():
