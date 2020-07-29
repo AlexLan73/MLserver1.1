@@ -201,7 +201,7 @@ if __name__ == "__main__":
                 __id = __dan[0]
                 with _lock:
                     info[__id] = copy.deepcopy(__dan[1])
-                    print(" start MDF ")
+                    print(" start ")
                     b = executor.submit(__convert_dan, __id, info, queve_log)
 
 
