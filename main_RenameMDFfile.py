@@ -66,6 +66,9 @@ def __rename_file(_clf, __path_file):
 
 
 if __name__ == "__main__":
+
+    RenameMDF
+
     print("  test main_RenameMDFfile")
     _clf_json = CLFJson(r"E:\MLserver\data\PS33SED\log\2020-06-30_15-21-49\clf.json")
 
