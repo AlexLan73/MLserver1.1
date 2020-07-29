@@ -5,7 +5,6 @@ import threading
 from Core.StatDan import *
 from Core.ReadWrite import *
 
-
 class Clexport(threading.Thread):
     import os, sys, copy, glob, json, time
     from subprocess import Popen, PIPE, STDOUT
@@ -18,6 +17,35 @@ class Clexport(threading.Thread):
 
         self.path_work = StatDan.__getItem__("path_work")
         self.path_common = StatDan.__getItem__("path_commonт")
+
+
+class ClexportXX(threading.Thread):
+    import os, sys, copy, glob, json, time
+    from subprocess import Popen, PIPE, STDOUT
+    import logging
+
+    def __init__(self, _key, key_val, queve, maxpool=5 ):
+        threading.Thread.__init__(self)
+        self.config_export = config_export
+        self.logger = self.logging.getLogger("exampleApp.Clexport.__init__")
+
+        self.path_work = StatDan.__getItem__("path_work")
+        self.path_common = StatDan.__getItem__("path_commonт")
+
+        self.type_exsport = _key
+        self.type_exsport_val = key_val
+
+        self.maxpool = maxpool
+
+        self.queve =  queve
+
+#        id_info = dict( "file_clf" = "...", "file_log" = "...", "process" = -1, "error" = 0, )
+#        self.info=dict(  "id":id_info)
+        self.info=dict(id=dict())
+
+
+    def run(self):
+        pass
 
     # ==========  CLEXPORT ====================================
     def run_clexport(self, bconvert=True):

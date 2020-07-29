@@ -10,6 +10,7 @@ class ALLClexport(threading.Thread):
     import os, sys, copy, glob, json, time
     from subprocess import Popen, PIPE, STDOUT
     import logging
+    from multiprocessing import Queue
 
     def __init__(self, config_export : dict, siglog_config_basa ):
         threading.Thread.__init__(self)
@@ -20,10 +21,13 @@ class ALLClexport(threading.Thread):
         self.path_common = StatDan.__getItem__("path_commonт")
 
         self._rw = ReadWrite()
-        self._key_dir = {x:self.path_work+"\\"+x  for x in  list(self.config_export.keys())}
+        __ls_key_config_export = list(self.config_export.keys())
+        self._key_prog = {x:None  for x in __ls_key_config_export}
+        self._key_dir = {x:self.path_work+"\\"+x  for x in __ls_key_config_export}
         self._rw.make_ddir(self._key_dir, True)
 
         self.copy_to_dir(siglog_config_basa)
+        self.queve = self.Queue()
 
         self.log_file_basa = self.path_work+"\\LOG\\Log_Clexport_"
 
@@ -48,6 +52,39 @@ class ALLClexport(threading.Thread):
             else:
                 self.logger.warning("  у key {} нет данных".format(key))
 
+    def __fprint_logg(q, is_logg):
+        while is_logg:
+            if q.empty():
+                time.sleep(0.05)
+            else:
+                while  not(q.empty()):
+                    print("  fprint  ===>>> ", q.get())
+
+
+    def run(self):
+        # запуск потока записи логов во время конвертации
+        is_logg = True
+        _fprint = Process(target=__fprint_logg, args=(self.queve, is_logg), daemon=True)  # , daemon=True
+        _fprint.start()
+
+
+        # загружаем функции для потока
+        for key, val in  self._key_prog.items():
+            if "MDF" in key:
+                self._key_prog[key] = ClexportXX(key, self.config_export[key], self.queve)
+
+        # запускаем поток
+        for key, val in  self._key_prog.items():
+            if not(None in val):
+                # val.start();
+                val.run()
+
+        # ожидаем завершения потоков
+        for key, val in  self._key_prog.items():
+            if not(None in val):
+                val.join()
+
+        kkk=1
 
     # ==========  CLEXPORT ====================================
     def run_clexport(self, bconvert=True):
