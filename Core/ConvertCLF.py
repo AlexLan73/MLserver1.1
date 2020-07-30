@@ -49,7 +49,7 @@ class ConvertCLF(threading.Thread):
         return _name_file_datax_clf
 
     def run1(self):
-
+        from pathlib import Path
         while self.__count_files > 0:
             #  две строчки нужны для синхронизации с обычным режимом
             self._name_file_datax_clf = self.__test__files_clf()
@@ -58,7 +58,9 @@ class ConvertCLF(threading.Thread):
             for it in self._name_file_datax_clf:
                 print(" ------   {} <<<====".format(it))
                 __dan_clf = self.run_clf_text(it)
-                self._all_file[it] = self.copy.deepcopy(__dan_clf)
+
+
+                self._all_file[Path(__dan_clf["rename clf"][1]).stem] = self.copy.deepcopy(__dan_clf)
                 file1 = self.path_clf+"\\"+__dan_clf["rename clf"][1]
 
                 self._clf_json.set_all(self._all_file)
