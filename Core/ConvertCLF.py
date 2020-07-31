@@ -113,7 +113,8 @@ class ConvertCLF(threading.Thread):
             for it in self._name_file_datax_clf:
                 print(" ------   {} <<<====".format(it))
                 __dan_clf = self.run_clf_text(it)
-                self._all_file[it] = self.copy.deepcopy(__dan_clf)
+                __z = str(__dan_clf["rename clf"][1]).split(".")[0]
+                self._all_file[__z] = self.copy.deepcopy(__dan_clf)
                 file1 = self.path_clf + "\\" + __dan_clf["rename clf"][1]
 
                 self._clf_json.set_all(self._all_file)
