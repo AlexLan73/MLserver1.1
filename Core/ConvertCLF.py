@@ -41,6 +41,7 @@ class ConvertCLF(threading.Thread):
         self._name_file_datax_clf = self.glob.glob(self.path_work + "\\*.clf")
 
         self.__maska0_datatime = r'%d.%m.%Y %H:%M:%S.%f'
+        self.__maska1_datatime = r'%Y-%m-%d %H:%M:%S.%f'
         self._clf_data_trigger = dict()
         self._triggerName = self._all_file.get("TriggerName", dict())
         self._read_trigger_name()
@@ -201,8 +202,8 @@ class ConvertCLF(threading.Thread):
                                 если входим в диапазое 
                                 читаем self._triggerName.get(n)- название триггера
                                     "TriggerX":{
-                                                2:["21.06.2020 13:32:57.763873", "Stop",
-                                                3:["21.06.2020 13:32:57.763873", "No-No""
+                                                "21.06.2020 13:32:57.763873":[2, "Stop"],
+                                                "21.06.2020 13:32:57.763873":[3, "No-No"]
                                     }
                                 '''
                                 __d = dict()
@@ -210,18 +211,11 @@ class ConvertCLF(threading.Thread):
                                 for key, val in self._clf_data_trigger.items():
                                     #                                    print(key)
                                     if (key >= __datatime_start) and (key <= __datatime_end):
-                                        print("!!!")
                                         __d[str(key)] = [val, self._triggerName[val]]
-                                #                                        __file_num_trig +="_({})".format(val)
-
-                                #                                print(" ===>  ", __file_num_trig)
-                                #                                pprint(__d, width=1)
-                                __d_key = list(__d.keys())
-                                #                                print("**"*45)
-                                for it in __d_key: del self._clf_data_trigger[it]
-#                                pprint(_clf_data_trigger, width=1)
 
                                 if len(__d)>0:
+                                    __d_key = list(__d.keys())
+                                    for it in __d_key: del self._clf_data_trigger[datetime.strptime(it, self.__maska1_datatime)]
                                     __mem["TriggerX"] = self.copy.deepcopy(__d)
 
                                 __mem["End"] = __sdatatime_end
