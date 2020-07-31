@@ -3,7 +3,6 @@ from datetime import datetime
 from Core.CountInitialData import *
 import threading, re
 
-
 from Core.StatDan import *
 from Core.ReadWrite import *
 
@@ -21,39 +20,34 @@ class ConvertCLF(threading.Thread):
         self.path_work = StatDan.__getItem__("path_work")
         self.path_common = StatDan.__getItem__("path_commonт")
 
-        self.path_clf = self.path_work+"\\CLF"
+        self.path_clf = self.path_work + "\\CLF"
         self._rw = ReadWrite()
         self._rw.make_dir(self.path_clf)
 
         StatDan.__setItem__("ConvertCLF_error", 0)
 
         self._clf_json = StatDan.__getItem__("iclf_json")
-        self._all_file =self._clf_json.read_json()
+        self._all_file = self._clf_json.read_json()
 
         self.logger.info("   программа создает clf.json c информацией из *.clf ")
 
         self._exe = self.path_common + "\\DLL\\FileType.exe"
 
-        self.log_file = self.path_work+"\\LOG\\Log_FileType.log"
+        self.log_file = self.path_work + "\\LOG\\Log_FileType.log"
 
         self.logger.info("   запускаем программу " + self._exe)
         self.logger.info("   данные из " + self.path_work)
 
-        self._name_file_datax_clf = self.glob.glob( self.path_work+"\\*.clf")
+        self._name_file_datax_clf = self.glob.glob(self.path_work + "\\*.clf")
 
         self.__maska0_datatime = r'%d.%m.%Y %H:%M:%S.%f'
-        self._clf_data_trigger=dict()
-        self._triggerName = self._all_file.dclf.get("TriggerName", dict())
+        self._clf_data_trigger = dict()
+        self._triggerName = self._all_file.get("TriggerName", dict())
+        self._read_trigger_name()
         self.triggerNum()
 
-    def triggerNum(self, work_dir):
-        fname = Path(self.path_work + "\\TextLog.txt")
-
-        if not (fname.exists()):
-            return
-
-        ls_file = self.rw.ReadText(self.path_work + "\\TextLog.txt")
-        '''
+    def _read_trigger_name(self):
+        """
             считать ml_rt2.ini
             1. Вставить кусок с описанием триггеров
             2. записать их в clf.json в формаие
@@ -63,13 +57,37 @@ class ConvertCLF(threading.Thread):
                         3:"No-No"
                 },
                 записать в -> self._triggerName
-                затем перенос в 
-        '''
+                затем перенос в
+        """
+
+        fname = Path(self.path_work + "\\ml_rt2.ini")
+
+        if not (fname.exists()):
+            return
+
+        ls_file = self._rw.ReadText(self.path_work + "\\ml_rt2.ini")
+        for it in ls_file:
+            if "Trigger" in it:
+                print(it)
+                __tr = str(it).replace("Trigger", "")
+                __mtr = __tr.split("=")
+                self._triggerName[__mtr[0]] = __mtr[1]
+
+        self._all_file["TriggerName"]= self.copy.deepcopy(self._triggerName)
+
+    def triggerNum(self):
+        fname = Path(self.path_work + "\\TextLog.txt")
+
+        if not (fname.exists()):
+            return
+
+        ls_file = self._rw.ReadText(self.path_work + "\\TextLog.txt")
 
         for it in ls_file:
             if "trigger" in it.lower():
                 print(it)
-                __datatime = datetime.strptime(re.findall(r"\d+.\d+.\d+ \d+:\d+:\d+.\d+", it)[0], self.__maska0_datatime)
+                __datatime = datetime.strptime(re.findall(r"\d+.\d+.\d+ \d+:\d+:\d+.\d+", it)[0],
+                                               self.__maska0_datatime)
                 __trigger0 = it[it.lower().index("trigger"):]
                 __trigger = __trigger0.split(" ")
                 self._clf_data_trigger[__datatime] = __trigger[1]
@@ -79,7 +97,7 @@ class ConvertCLF(threading.Thread):
         # модуль для теста файлов сформированные clf
         # если программа работает (формирования) то берем все кроме -1
 
-        _name_file_datax_clf = self.glob.glob( self.path_work+"\\*.clf")
+        _name_file_datax_clf = self.glob.glob(self.path_work + "\\*.clf")
         if StatDan.__getItem__("is_lrf"):
             _name_file_datax_clf = _name_file_datax_clf[:-1]
         return _name_file_datax_clf
@@ -95,25 +113,23 @@ class ConvertCLF(threading.Thread):
                 print(" ------   {} <<<====".format(it))
                 __dan_clf = self.run_clf_text(it)
                 self._all_file[it] = self.copy.deepcopy(__dan_clf)
-                file1 = self.path_clf+"\\"+__dan_clf["rename clf"][1]
+                file1 = self.path_clf + "\\" + __dan_clf["rename clf"][1]
 
                 self._clf_json.set_all(self._all_file)
                 self._clf_json.write_json()
                 k0 = -1
                 error = -1
                 while k0 < 20 and error < 0:
-                    error= self._rw.rename_file(it, file1)
+                    error = self._rw.rename_file(it, file1)
                     if error == 0:
                         self.logger.info(" переименовал в файл {} ".format(file1))
                     else:
-                        k0+=1
+                        k0 += 1
                         self.logger.warning("  проблема с переносом файла в {} ".format(file1))
                         self.time.sleep(0.1)
 
             self._name_file_datax_clf = self.__test__files_clf()
             self.__count_files = len(self._name_file_datax_clf)
-
-
 
     def run(self):
         self.__count_files = 0
@@ -122,10 +138,10 @@ class ConvertCLF(threading.Thread):
             self.__count_files = len(self._name_file_datax_clf)
             self.run1()
 
-
-    #***********  run_clf_text  ********************
+    # ***********  run_clf_text  ********************
     def run_clf_text(self, file):
         __dan_clf = {}
+
         def __data_time_convert(self, s: str):
             s1 = s.strip().replace(".", "-").split(" ")
             s01 = s1[0].split("-")
@@ -189,6 +205,24 @@ class ConvertCLF(threading.Thread):
                                                 3:["21.06.2020 13:32:57.763873", "No-No""
                                     }
                                 '''
+                                __d = dict()
+                                #                                __file_num_trig = ""
+                                for key, val in self._clf_data_trigger.items():
+                                    #                                    print(key)
+                                    if (key >= __datatime_start) and (key <= __datatime_end):
+                                        print("!!!")
+                                        __d[str(key)] = [val, self._triggerName[val]]
+                                #                                        __file_num_trig +="_({})".format(val)
+
+                                #                                print(" ===>  ", __file_num_trig)
+                                #                                pprint(__d, width=1)
+                                __d_key = list(__d.keys())
+                                #                                print("**"*45)
+                                for it in __d_key: del self._clf_data_trigger[it]
+#                                pprint(_clf_data_trigger, width=1)
+
+                                if len(__d)>0:
+                                    __mem["TriggerX"] = self.copy.deepcopy(__d)
 
                                 __mem["End"] = __sdatatime_end
                                 break
@@ -241,10 +275,10 @@ class ConvertCLF(threading.Thread):
 
             return __dan_clf
 
-        _param = self._exe + " -v " +  file
+        _param = self._exe + " -v " + file
         __dan_clf = {}
         __i = file.index(".clf")
-#        __name_file = file[:__i]
+        #        __name_file = file[:__i]
         __dan_clf = __convert(self, _param, file)
         __info = " convert FileType name file -> {}".format(file)
         print(__info)
