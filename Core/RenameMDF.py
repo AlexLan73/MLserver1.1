@@ -68,7 +68,7 @@ class RenameMDF(threading.Thread):
                 if len(__mem) > 2:
                     __trigget = "_Trigger"
 
-                    __triggerX = __mem.get(["TriggerX"].dict())
+                    __triggerX = __mem.get("TriggerX",dict())
 
                     for key, val in __triggerX.items():
                         __trigget += "_({})".format(val[0])

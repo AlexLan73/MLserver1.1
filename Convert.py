@@ -88,7 +88,7 @@ if __name__ == "__main__":
     _dop_config = DopConfig(_rw)
     _config.set(_dop_config.CarName)
 
-    _clf_json.set("Logger", _dop_config.NameLogger)
+    _clf_json.set("LoggerConfig", _dop_config.NameLogger)
     _clf_json.write_json()
 
     _readxml = ReadXml(_dop_config.path_common, _dop_config.dir_analysis)
