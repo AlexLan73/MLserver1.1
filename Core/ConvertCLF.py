@@ -104,7 +104,7 @@ class ConvertCLF(threading.Thread):
         return _name_file_datax_clf
 
     def run1(self):
-        from pathlib import Path
+
         while self.__count_files > 0:
             #  две строчки нужны для синхронизации с обычным режимом
             self._name_file_datax_clf = self.__test__files_clf()
@@ -113,6 +113,7 @@ class ConvertCLF(threading.Thread):
             for it in self._name_file_datax_clf:
                 print(" ------   {} <<<====".format(it))
                 __dan_clf = self.run_clf_text(it)
+<<<<<<< .merge_file_a04092
 <<<<<<< HEAD
                 __z = str(__dan_clf["rename clf"][1]).split(".")[0]
                 self._all_file[__z] = self.copy.deepcopy(__dan_clf)
@@ -123,6 +124,11 @@ class ConvertCLF(threading.Thread):
                 self._all_file[Path(__dan_clf["rename clf"][1]).stem] = self.copy.deepcopy(__dan_clf)
                 file1 = self.path_clf+"\\"+__dan_clf["rename clf"][1]
 >>>>>>> adccf38... #23 Остановился на сравнении дат, для поиска и формирование номера триггера
+=======
+                __z = str(__dan_clf["rename clf"][1]).split(".")[0]
+                self._all_file[__z] = self.copy.deepcopy(__dan_clf)
+                file1 = self.path_clf + "\\" + __dan_clf["rename clf"][1]
+>>>>>>> .merge_file_a18644
 
                 self._clf_json.set_all(self._all_file)
                 self._clf_json.write_json()
