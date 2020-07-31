@@ -67,8 +67,8 @@ class RenameMDF(threading.Thread):
                     for key, val in __triggerX.items():
                         __trigget += "_({})".format(val[0])
 
-                    print("  __trigget => ", __trigget)
-
+                    print("  __trigget => ",__trigget)
+                    k=1
                 _name_file = __d["Car name"] + "_(" + __start + ")_(" + __end + ")_" + _f00x + __trigget + __ext
 
                 if not (self.__test_read_file(__path_file)):
