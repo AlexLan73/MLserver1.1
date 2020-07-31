@@ -129,6 +129,11 @@ class ConvertCLF(threading.Thread):
                 self._all_file[__z] = self.copy.deepcopy(__dan_clf)
                 file1 = self.path_clf + "\\" + __dan_clf["rename clf"][1]
 >>>>>>> .merge_file_a18644
+=======
+                __z = str(__dan_clf["rename clf"][1]).split(".")[0]
+                self._all_file[__z] = self.copy.deepcopy(__dan_clf)
+                file1 = self.path_clf + "\\" + __dan_clf["rename clf"][1]
+>>>>>>> origin/RenameMDFfile
 
                 self._clf_json.set_all(self._all_file)
                 self._clf_json.write_json()

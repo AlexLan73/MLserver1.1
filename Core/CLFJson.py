@@ -9,10 +9,14 @@ class CLFJson:
         self._is_new = False
         self.dclf = dict()
 <<<<<<< HEAD
+<<<<<<< HEAD
         self.lock = threading.Lock()    # self.lock.release()
 =======
         self.lock = threading.Lock()  # self.lock.release()
 >>>>>>> adccf38... #23 Остановился на сравнении дат, для поиска и формирование номера триггера
+=======
+        self.lock = threading.Lock()  # self.lock.release()
+>>>>>>> origin/RenameMDFfile
         self.read_json()
 
     def read_json(self):
@@ -25,6 +29,7 @@ class CLFJson:
         self._is_new = False
 
     def get(self, name):
+<<<<<<< HEAD
 <<<<<<< HEAD
         if name in self.dclf:
             with self.lock:
