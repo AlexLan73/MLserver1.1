@@ -1,5 +1,7 @@
+from pathlib import Path
+from datetime import datetime
 from Core.CountInitialData import *
-import threading
+import threading, re
 
 
 from Core.StatDan import *
@@ -38,6 +40,39 @@ class ConvertCLF(threading.Thread):
         self.logger.info("   данные из " + self.path_work)
 
         self._name_file_datax_clf = self.glob.glob( self.path_work+"\\*.clf")
+
+        self._clf_data_trigger=dict()
+        self._triggerName = self._all_file.dclf.get("TriggerName", dict())
+        self.triggerNum()
+
+    def triggerNum(self, work_dir):
+        fname = Path(self.path_work + "\\TextLog.txt")
+
+        if not (fname.exists()):
+            return
+
+        ls_file = self.rw.ReadText(self.path_work + "\\TextLog.txt")
+        '''
+            1. Вставить кусок с описанием триггеров
+            2. записать их в clf.json в формаие
+                "TriggerName" : {
+                        1:"Start",
+                        2:"End",
+                        3:"No-No"
+                },
+                записать в -> self._triggerName
+                затем перенос в 
+        '''
+
+        for it in ls_file:
+            if "trigger" in it.lower():
+                print(it)
+                __datatime = datetime.strptime(re.findall(r"\d+.\d+.\d+ \d+:\d+:\d+.\d+", it)[0],
+                                               '%d.%m.%Y %H:%M:%S.%f')
+                __trigger0 = it[it.lower().index("trigger"):]
+                __trigger = __trigger0.split(" ")
+                self._clf_data_trigger[__datatime] = __trigger[1]
+
 
     def __test__files_clf(self):
         # модуль для теста файлов сформированные clf
@@ -85,14 +120,6 @@ class ConvertCLF(threading.Thread):
             self._name_file_datax_clf = self.__test__files_clf()
             self.__count_files = len(self._name_file_datax_clf)
             self.run1()
-
-
-            # self._name_file_datax_clf = self.glob.glob( self.path_work+"\\*.clf")
-            #
-            # files = self.glob.glob(self.path_work +"\\*.clf")
-            # for it in files:
-            #     print(" ------   {} <<<====".format(it))
-            # self.time.sleep(1)
 
 
     #***********  run_clf_text  ********************
@@ -198,12 +225,6 @@ class ConvertCLF(threading.Thread):
                 __end = __data_time_convert(self, __mem_fxx[__key_end]["End"])
                 __new_files = __dan_clf["Car name"] + "_" + __start + "_" + __end + ".clf"
                 __dan_clf["rename clf"] += [__new_files]
-                k = 1
-                # if len(__mem_fxx) == 1:
-                #     __start = __mem_fxx["Start"]
-                #     __end =  __mem_fxx["End"]
-                #     __new_files = __dan_clf["Car name"] + "_" +__start + "_" +__end+".clf"
-                # else:
 
             return __dan_clf
 
