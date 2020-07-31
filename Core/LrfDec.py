@@ -9,10 +9,9 @@ class LrfDec(threading.Thread):
     import os, sys, copy, glob
     from subprocess import Popen, PIPE, STDOUT
 
-    def __init__(self, config_lrfdec:dict):
+    def __init__(self, config_lrfdec: dict):
         threading.Thread.__init__(self)
         self.logger = logging.getLogger("exampleApp.LrfDec.__init__")
-#        self.logger.info(" Разбор ini файла ")
         self.path_work = StatDan.__getItem__("path_work")
         StatDan.__setItem__("lrf_error", 0)
         StatDan.__setItem__("is_lrf", True)
@@ -27,7 +26,7 @@ class LrfDec(threading.Thread):
     # - - - - - - -
     def __run__lrf_dec(self):
 
-        self.logger =  logging.getLogger("exampleApp.RunProgram.LrfDec")
+        self.logger = logging.getLogger("exampleApp.RunProgram.LrfDec")
         self.logger.info("  Start function lrf_dec ")
 
         s = self.path_lrf_dec + self.config_lrfdec + self.path_work
@@ -66,7 +65,7 @@ class LrfDec(threading.Thread):
             self.logger.warning("  Проблема с записью в файл log_file_clf.txt")
 
     # - - - - - - -
-    def __filtr_log(self,  __ls):
+    def __filtr_log(self, __ls):
         import re
         __ls0 = []
         for it in __ls:
@@ -82,9 +81,9 @@ class LrfDec(threading.Thread):
             __dir_file_handling += [_x[:-1]]
 
         __ls_not_handling = [re.sub(r'\n', "", x).strip() for x in __ls
-                                 if not ("Handling" in x)
-                                 # and ("entries" in x)
-                                 and (len(x.strip()) > 0)]
+                             if not ("Handling" in x)
+                             # and ("entries" in x)
+                             and (len(x.strip()) > 0)]
 
         _files = [self.path_work + "\\" + x for x in self.os.listdir(self.path_work) if ".clf" in x]
 
@@ -94,8 +93,8 @@ class LrfDec(threading.Thread):
         for it in __dir_file_handling0:
             __dir_file_handling01 += [it[0]]
 
-        if len(__ls0) >10:
-            __ls0=__ls0[-10:]
+        if len(__ls0) > 10:
+            __ls0 = __ls0[-10:]
 
         return __dir_file_handling01, __ls0
 
@@ -134,7 +133,7 @@ class LrfDec(threading.Thread):
         StatDan.__setItem__("is_lrf", True)
 
         while self._countInitialData.call() > 0:
-            if self._countInitialData.count_repit >4:
+            if self._countInitialData.count_repit > 4:
                 self.logger.warning("  кол-во циклов обработки исходных данных привысило 3")
                 self.logger.warning("  кол-во данных не уменьшается")
                 return
@@ -142,14 +141,15 @@ class LrfDec(threading.Thread):
             self.__run__lrf_dec()  # запускаем программу конвертации
 
             __ls = self._rw.ReadText(self.log_file_clf)
-            self.logger.info(" Обработка файла {} на предмет с конвертированных \"Сырых данных\" ".format(self.log_file_clf))
+            self.logger.info(
+                " Обработка файла {} на предмет с конвертированных \"Сырых данных\" ".format(self.log_file_clf))
 
             __dir_file_handling01, __file_error = self.__filtr_log(__ls)
 
             self.logger.info(" Обработанные данные переименновываем, добавляем ~ к имени файла  ")
             self.__convert_files(__dir_file_handling01)
 
-            _error =  self.__test_messange(__file_error)
+            _error = self.__test_messange(__file_error)
             if _error < 0:
                 StatDan.__setItem__("lrf_error", _error)
                 StatDan.__setItem__("is_lrf", False)
@@ -160,7 +160,7 @@ class LrfDec(threading.Thread):
         self.logger.info("  LrfDec завершено Ok! ")
         StatDan.__setItem__("is_lrf", False)
         StatDan.__setItem__("lrf_error", 0)
-        return  0
+        return 0
 
     # ==========  ERROR PROG  ====================================+
     def _error_prog(self, kode):
@@ -229,4 +229,3 @@ class LrfDec(threading.Thread):
 # EC_NoData 	54 	The device does not contain any data of the requested kind.
 # EC_Conf 	    55 	The device does not contain a valid configuration.
 # EC_Compile 	56 	During compilation of the configuration an error occurred.
-

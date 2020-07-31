@@ -17,21 +17,16 @@ class RenameMDF(threading.Thread):
         path_files_mdf = r"E:\MLserver\data\PS33SED\log\2020-06-30_15-21-49\MDF"
         self.clf = clf
 
-#        __data_trigger:dict = copy.deepcopy(self.clf.dclf["data_trigger"])
-
         self.__data_trigger = dict()
         self.maska1_datatime = r'%Y-%m-%d %H:%M:%S.%f'
         self.maska2_datatime = r'%d.%m.%Y %H:%M:%S.%f'
-#        for key, val in __data_trigger.items():
-#            __datatime = datetime.strptime(key, self.maska1_datatime)
-#            self.__data_trigger[__datatime] = copy.deepcopy(val)
 
         self.is_work = is_work
         self.queve_dir = Queue()
         self._lockRenameMDF = threading.Lock()
 
-        x = threading.Thread(target=RenameMDF.read_dir_mdf, args=(self, path_files_mdf, ext, self.queve_dir,),
-                             daemon=True)
+        x = threading.Thread(
+            target=RenameMDF.read_dir_mdf, args=(self, path_files_mdf, ext, self.queve_dir,), daemon=True)
         x.start()
 
     def run1(self):
@@ -50,7 +45,6 @@ class RenameMDF(threading.Thread):
 
             while not (self.queve_dir.empty()):
                 __path_file = self.queve_dir.get()
-                #                _path = Path(__path_file)
                 __name = Path(__path_file).stem
                 __ext = Path(__path_file).suffix
                 __path_files = Path(__path_file).parent
@@ -64,25 +58,23 @@ class RenameMDF(threading.Thread):
 
                 __start = __convert_data_time(self, __mem["Start"])
                 __end = __convert_data_time(self, __mem["End"])
-                __trigget=""
+                __trigget = ""
                 if len(__mem) > 2:
                     __trigget = "_Trigger"
 
-                    __triggerX = __mem.get("TriggerX",dict())
+                    __triggerX = __mem.get("TriggerX", dict())
 
                     for key, val in __triggerX.items():
                         __trigget += "_({})".format(val[0])
 
-                    print("  __trigget => ",__trigget)
-                    k=1
+                    print("  __trigget => ", __trigget)
+
                 _name_file = __d["Car name"] + "_(" + __start + ")_(" + __end + ")_" + _f00x + __trigget + __ext
 
-                if not(self.__test_read_file(__path_file)):
+                if not (self.__test_read_file(__path_file)):
                     return -1
 
-                Path(__path_file).rename(str(__path_files)+"\\"+_name_file)
-                k = 1
-
+                Path(__path_file).rename(str(__path_files) + "\\" + _name_file)
 
     def read_dir_mdf(self, path_files_mdf, ext, queve_dir):
         from pathlib import Path
@@ -116,9 +108,3 @@ class RenameMDF(threading.Thread):
                 return True
         except:
             return False
-
-    #        executor = ThreadPoolExecutor(max_workers=1)
-    #        b = executor.submit(self.read_dir_mdf, path_files_mdf, ext, queve_dir, daemon=True)
-    #        k1=1
-    #        executor = Process(target=RenameMDF.read_dir_mdf, args=(self, path_files_mdf, ext, queve_dir), daemon=True)  # , daemon=True
-    #        _read_dir.start()

@@ -4,12 +4,14 @@ from Core.StatDan import *
 
 import logging
 
+
 class DopConfig:
     import os, sys, glob
+
     def __init__(self, rw: ReadWrite):
         self._rw = rw
         self.path_work = self._rw.path_work
-        self.path_common = self.find_common( self.path_work, "#COMMON")
+        self.path_common = self.find_common(self.path_work, "#COMMON")
         self.path_lrf_dec = self.path_common + "\\DLL\\lrf_dec.exe"
         self.CarName = ""
 
@@ -68,13 +70,13 @@ class DopConfig:
         try:
             _s = _ls[0]
             _i = _s.index("_#")
-            if _i >0:
+            if _i > 0:
                 _ls[0] = _s[:_i]
-                _ls[1] = _s[_i+2:]
+                _ls[1] = _s[_i + 2:]
         except:
             pass
         _CarName = [x for x in ls if "CarName" in x]
-        self.CarName =_CarName[0].split("=")[1]
+        self.CarName = _CarName[0].split("=")[1]
         return _ls
 
         _s = "В каталоге {} нет файла ml_rt.ini".format(self.path_sourse)
@@ -120,8 +122,7 @@ class DopConfig:
 
         __path = self.path_common + "\\Configuration\\" + name_congig
 
-#        __ls = self.os.listdir(__path)
-        __ls = self.glob.glob(__path+"\\*analysis.zip")
+        __ls = self.glob.glob(__path + "\\*analysis.zip")
         print(" Поиск analysis.zip  !!!!")
         print("   путь -> ", __path)
         for it in __ls:
@@ -147,8 +148,7 @@ class DopConfig:
             logger.info(" Файл analysis найден ")
             return self.dir_analysis
 
-#        __path = __path + "\\" + __z
-        __path =  __z
+        __path = __z
         self.zip_extractall(name_file_analysis_zip, __path)
         self.dir_analysis = __path
         logger.info(" Файл analysis найден ")

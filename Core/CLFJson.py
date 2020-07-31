@@ -8,15 +8,7 @@ class CLFJson:
         self.path_file = path_file
         self._is_new = False
         self.dclf = dict()
-<<<<<<< HEAD
-<<<<<<< HEAD
         self.lock = threading.Lock()    # self.lock.release()
-=======
-        self.lock = threading.Lock()  # self.lock.release()
->>>>>>> adccf38... #23 Остановился на сравнении дат, для поиска и формирование номера триггера
-=======
-        self.lock = threading.Lock()  # self.lock.release()
->>>>>>> origin/RenameMDFfile
         self.read_json()
 
     def read_json(self):
@@ -29,19 +21,9 @@ class CLFJson:
         self._is_new = False
 
     def get(self, name):
-<<<<<<< HEAD
-<<<<<<< HEAD
         if name in self.dclf:
-            with self.lock:
+            with self.lock:             # self.lock.acquire() ....  # self.lock.release()
                 x = self.dclf[name]
-=======
-        if name in self.dclf:  # self.lock.acquire() ....  # self.lock.release()
-            x = self.dclf[name]
->>>>>>> adccf38... #23 Остановился на сравнении дат, для поиска и формирование номера триггера
-=======
-        if name in self.dclf:  # self.lock.acquire() ....  # self.lock.release()
-            x = self.dclf[name]
->>>>>>> origin/RenameMDFfile
             return x
         else:
             return None
@@ -65,7 +47,6 @@ class CLFJson:
                 f.write(self.json.dumps(dan_json))
 
     def read(self, file):
-<<<<<<< HEAD
         with self.lock:
             with open(file, 'r') as json_file:
                 try:
@@ -73,12 +54,3 @@ class CLFJson:
                     return self.dclf
                 except:
                     pass
-=======
-        with open(file, 'r') as json_file:
-            try:
-                with self.lock:
-                    self.dclf = self.json.load(json_file)
-                return self.dclf
-            except:
-                pass
->>>>>>> adccf38... #23 Остановился на сравнении дат, для поиска и формирование номера триггера

@@ -9,6 +9,7 @@ from subprocess import Popen, PIPE, STDOUT
 
 _lock = threading.Lock()
 
+
 def read_dir_clf(config_dir, queve_dir):
     while config_dir["is_read_files"]:
         __new_files = list(set(glob.glob(config_dir["path_clr_files"])) - set(
@@ -20,12 +21,10 @@ def read_dir_clf(config_dir, queve_dir):
                 _info = dict()
                 _info["file_clf"] = it_file
                 _info["path_out"] = config_dir["path_out"]
-#                _info["file_log"] = copy.deepcopy(config_dir["path_clr_log_file_mask"].replace("maskalog", str(_id)))
                 _info["process"] = -2
                 _info["error"] = 0
                 _info["repeat"] = 0
                 _info["maska_exsport"] = config_dir["maska_exsport"]
-                #                pprint.pprint(_info, width=1)
                 queve_dir.put([_id, copy.deepcopy(_info)])
 
             config_dir["bfiles"].extend(__new_files)
@@ -41,10 +40,12 @@ def fprint_log(is_convert, queve_log):
             while not (queve_log.empty()):
                 __log = queve_log.get()
                 print("->> {}".format(__log))
-#-------------------------------------------------
+
+
+# -------------------------------------------------
 
 def __test_read_file(path, n=50):
-    while n>0:
+    while n > 0:
         try:
             with open(path, 'r') as file:
                 return False
@@ -54,23 +55,22 @@ def __test_read_file(path, n=50):
 
 
 def __convert_dan(_id, info, _queve_log):
-
     with _lock:
-        _info =  copy.deepcopy(info[_id])
+        _info = copy.deepcopy(info[_id])
 
     __maska = _info["maska_exsport"]
-    __path_dit_clf = _info["file_clf"]      # self._rws.path_sourse + "\\" + key
+    __path_dit_clf = _info["file_clf"]  # self._rws.path_sourse + "\\" + key
     __path_out = _info["path_out"]
     _info["repeat"] += 1
 
     os.chdir(r"C:\Program Files (x86)\GIN\MLserver")
     p0 = __maska.replace("file_clf", __path_dit_clf)
     p1 = str(p0).replace("my_dir", __path_out)
-    _commanda ="CLexport.exe "+ p1
+    _commanda = "CLexport.exe " + p1
     _name = os.path.splitext(os.path.basename(__path_dit_clf))[0]
     _log_start = " id-->> {} \n ".format(_name)
-    _queve_log.put(_log_start+ " start convert")
-    _queve_log.put(_log_start+_commanda)
+    _queve_log.put(_log_start + " start convert")
+    _queve_log.put(_log_start + _commanda)
     print(_commanda)
 
     if __test_read_file(__path_dit_clf):
@@ -85,10 +85,10 @@ def __convert_dan(_id, info, _queve_log):
     try:
         p = Popen(_commanda, stdout=PIPE, stderr=STDOUT, bufsize=1)
     except:
-        _queve_log.put(_log_start+" -200 The program stopped working with a fatal error ")
+        _queve_log.put(_log_start + " -200 The program stopped working with a fatal error ")
         _info["error"] = -200
         _info["process"] = -1
-        _queve_log.put(_log_start+" выход по ошибки проблемма в CLexport.exe")
+        _queve_log.put(_log_start + " выход по ошибки проблемма в CLexport.exe")
 
         with _lock:
             info[_id] = copy.deepcopy(_info)
@@ -102,13 +102,13 @@ def __convert_dan(_id, info, _queve_log):
         return_code = p.returncode
         print(" код завершения  - ", return_code)
         _queve_log.put(_log_start + "   код завершения {}".format(return_code))
-        _queve_log.put(_log_start + "   "+_error_prog(return_code))
+        _queve_log.put(_log_start + "   " + _error_prog(return_code))
 
         _info["error"] = return_code
         _info["process"] = 1
 
     except:
-        print(" error  ",return_code)
+        print(" error  ", return_code)
         _queve_log.put(_log_start + "   код завершения {}".format(return_code))
         _queve_log.put(_log_start + "  проблема с записью на диск  ")
 
@@ -119,50 +119,51 @@ def __convert_dan(_id, info, _queve_log):
         info[_id] = copy.deepcopy(_info)
 
     # ==========  ERROR PROG  ====================================+
-def _error_prog(kode):
-        if kode == 0:
-            return " EC_Okay 0 Execution without any error."
-        elif kode == 1:
-            return " EC_NoRequest 1	Nothing was requested (no parameters), and nothing was done"
-        elif kode == 20:
-            return "EC_Memory 20 Not enough main memory available."
-        elif kode == 21:
-            return "EC_System 21 System problem e.g. needed DLL file missing."
-        elif kode == 22:
-            return "EC_Phys 22 Problem with physical interface – e.g. COM2 not installed."
-        elif kode == 30:
-            return "EC_Arg 30 The call specified illegal program arguments."
-        elif kode == 31:
-            return "EC_FilFind 31 A specified input file is not available."
-        elif kode == 32:
-            return "EC_FilForm 32 An input file does not have the required format."
-        elif kode == 33:
-            return "EC_FilVer 33 An input file has an incompatible file version."
-        elif kode == 34:
-            return "EC_FilWrite	34 An output file could not be opened or wrote on to."
-        elif kode == 40:
-            return "EC_NoConn 40 Connection to the device failed."
-        elif kode == 41:
-            return "EC_Comm 41 Error during communication or communication abort."
-        elif kode == 42:
-            return "EC_Timeout 42 Communication timeout (caused by a communications problem or device failure)."
-        elif kode == 50:
-            return "EC_Intern 50 Internal error – should not occur."
-        elif kode == 51:
-            return "EC_IllDev 51 Illegal device behavior – maybe caused by communications failure."
-        elif kode == 52:
-            return "EC_DevSW 52	The necessary software is not available on the device."
-        elif kode == 53:
-            return "EC_DevVer 53 The device uses an incompatible software version."
-        elif kode == 54:
-            return "EC_NoData 54 The device does not contain any data of the requested kind."
-        elif kode == 55:
-            return "EC_Conf 55 The device does not contain a valid configuration."
-        elif kode == 56:
-            return "EC_Compile 56 During compilation of the configuration an error occurred."
-        else:
-            return "NOT kod ERROR."
 
+
+def _error_prog(kode):
+    if kode == 0:
+        return " EC_Okay 0 Execution without any error."
+    elif kode == 1:
+        return " EC_NoRequest 1	Nothing was requested (no parameters), and nothing was done"
+    elif kode == 20:
+        return "EC_Memory 20 Not enough main memory available."
+    elif kode == 21:
+        return "EC_System 21 System problem e.g. needed DLL file missing."
+    elif kode == 22:
+        return "EC_Phys 22 Problem with physical interface – e.g. COM2 not installed."
+    elif kode == 30:
+        return "EC_Arg 30 The call specified illegal program arguments."
+    elif kode == 31:
+        return "EC_FilFind 31 A specified input file is not available."
+    elif kode == 32:
+        return "EC_FilForm 32 An input file does not have the required format."
+    elif kode == 33:
+        return "EC_FilVer 33 An input file has an incompatible file version."
+    elif kode == 34:
+        return "EC_FilWrite	34 An output file could not be opened or wrote on to."
+    elif kode == 40:
+        return "EC_NoConn 40 Connection to the device failed."
+    elif kode == 41:
+        return "EC_Comm 41 Error during communication or communication abort."
+    elif kode == 42:
+        return "EC_Timeout 42 Communication timeout (caused by a communications problem or device failure)."
+    elif kode == 50:
+        return "EC_Intern 50 Internal error – should not occur."
+    elif kode == 51:
+        return "EC_IllDev 51 Illegal device behavior – maybe caused by communications failure."
+    elif kode == 52:
+        return "EC_DevSW 52	The necessary software is not available on the device."
+    elif kode == 53:
+        return "EC_DevVer 53 The device uses an incompatible software version."
+    elif kode == 54:
+        return "EC_NoData 54 The device does not contain any data of the requested kind."
+    elif kode == 55:
+        return "EC_Conf 55 The device does not contain a valid configuration."
+    elif kode == 56:
+        return "EC_Compile 56 During compilation of the configuration an error occurred."
+    else:
+        return "NOT kod ERROR."
 
 
 if __name__ == "__main__":
@@ -173,9 +174,9 @@ if __name__ == "__main__":
     path_out = r"E:\MLserver\data\PS33SED\log\2020-06-30_15-21-49\MDF"
     config_dir = dict(
         patn_clr=path_in,
-        path_out= path_out,
+        path_out=path_out,
         path_clr_files=path_in + "\\*.clf",
-        maska_exsport =  r' -v -o -t -l "file_clf" -MB -O  "my_dir" SystemChannel=Binlog_GL.ini',
+        maska_exsport=r' -v -o -t -l "file_clf" -MB -O  "my_dir" SystemChannel=Binlog_GL.ini',
         path_clr_log_file_mask=path_in + "\\maskalog.log",
         bfiles=[],
         is_read_files=True
@@ -204,11 +205,8 @@ if __name__ == "__main__":
                     print(" start ")
                     b = executor.submit(__convert_dan, __id, info, queve_log)
 
-
             pprint.pprint(info, width=1)
         __count = 0
-
-
 
         for key, val in info.items():
             if val["process"] == 2:
@@ -217,4 +215,3 @@ if __name__ == "__main__":
                 config_dir["is_read_files"] = False
 
     is_convert = False
-    l = 1

@@ -18,7 +18,7 @@ class InArguments:
         sys.exit(t[0])
 
     def parse(self):
-        name_file_run = __file__  # путь старта программы
+        # name_file_run = __file__  # путь старта программы
         _dargs = dict(
             s_error="Ok!",
             kod_error=0,
