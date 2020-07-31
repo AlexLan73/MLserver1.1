@@ -41,6 +41,7 @@ class ConvertCLF(threading.Thread):
 
         self._name_file_datax_clf = self.glob.glob( self.path_work+"\\*.clf")
 
+        self.__maska0_datatime = r'%d.%m.%Y %H:%M:%S.%f'
         self._clf_data_trigger=dict()
         self._triggerName = self._all_file.dclf.get("TriggerName", dict())
         self.triggerNum()
@@ -53,6 +54,7 @@ class ConvertCLF(threading.Thread):
 
         ls_file = self.rw.ReadText(self.path_work + "\\TextLog.txt")
         '''
+            считать ml_rt2.ini
             1. Вставить кусок с описанием триггеров
             2. записать их в clf.json в формаие
                 "TriggerName" : {
@@ -67,8 +69,7 @@ class ConvertCLF(threading.Thread):
         for it in ls_file:
             if "trigger" in it.lower():
                 print(it)
-                __datatime = datetime.strptime(re.findall(r"\d+.\d+.\d+ \d+:\d+:\d+.\d+", it)[0],
-                                               '%d.%m.%Y %H:%M:%S.%f')
+                __datatime = datetime.strptime(re.findall(r"\d+.\d+.\d+ \d+:\d+:\d+.\d+", it)[0], self.__maska0_datatime)
                 __trigger0 = it[it.lower().index("trigger"):]
                 __trigger = __trigger0.split(" ")
                 self._clf_data_trigger[__datatime] = __trigger[1]
@@ -169,7 +170,7 @@ class ConvertCLF(threading.Thread):
                         __i1 = __s.index(":")
                         __fxx = __s[:__i1].strip()
                         __mem["Start"] = filtr04(__s, "Start")
-
+                        __datatime_start = datetime.strptime(__mem["Start"], self.__maska0_datatime)
                         while True:
                             i += 1
                             it = output[i]
@@ -177,7 +178,19 @@ class ConvertCLF(threading.Thread):
                                 xxx = filtr05(it, "Trigger")
                                 __mem["Trigger"] = xxx
                             elif 'End' in it:
-                                __mem["End"] = filtr04(it, "End")
+                                __sdatatime_end = filtr04(it, "End")
+                                __datatime_end = datetime.strptime(__sdatatime_end, self.__maska0_datatime)
+                                '''
+                                Добавляем значения из self._clf_data_trigger  _datatime : n
+                                если входим в диапазое 
+                                читаем self._triggerName.get(n)- название триггера
+                                    "TriggerX":{
+                                                2:["21.06.2020 13:32:57.763873", "Stop",
+                                                3:["21.06.2020 13:32:57.763873", "No-No""
+                                    }
+                                '''
+
+                                __mem["End"] = __sdatatime_end
                                 break
                         i += 1
                         __mem_fxx[__fxx] = self.copy.deepcopy(__mem)
