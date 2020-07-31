@@ -37,13 +37,13 @@ def inicial_logging():
     StatDan.__setItem__("logger", logger)
 
 
-def process_test():
-    _process = ViewProces()
-    _process.proces1()
-    count, all_process, _ls = _process.find_process('chrome.exe')
-    print("  кол-во запущенных программ {} ".format(count))
-    for i, it in enumerate(all_process):
-        print(" {}   {}".format(i, it))
+# def process_test():
+#     _process = ViewProces()
+#     _process.proces1()
+#     count, all_process, _ls = _process.find_process('chrome.exe')
+#     print("  кол-во запущенных программ {} ".format(count))
+#     for i, it in enumerate(all_process):
+#         print(" {}   {}".format(i, it))
 
 
 def error_run(t: tuple):

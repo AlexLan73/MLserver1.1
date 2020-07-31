@@ -8,7 +8,7 @@ class CLFJson:
         self.path_file = path_file
         self._is_new = False
         self.dclf = dict()
-        self.lock = threading.Lock()    # self.lock.release()
+        self.lock = threading.Lock()  # self.lock.release()
         self.read_json()
 
     def read_json(self):
@@ -22,9 +22,9 @@ class CLFJson:
 
     def get(self, name):
         if name in self.dclf:
-            with self.lock:             # self.lock.acquire() ....  # self.lock.release()
+            with self.lock:  # self.lock.acquire() ....  # self.lock.release()
                 x = self.dclf[name]
-	        return x
+                return x
         else:
             return None
 
