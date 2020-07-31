@@ -1,0 +1,11 @@
+diff a/Core/CLFJson.py b/Core/CLFJson.py	(rejected hunks)
+@@ -10,6 +10,9 @@
+          self.dclf = dict()
+ +<<<<<<< HEAD
+ +        self.lock = threading.Lock()    # self.lock.release()
+++=======
++         self.lock = threading.Lock()  # self.lock.release()
+++>>>>>>> adccf38... #23 Остановился на сравнении дат, для поиска и формирование номера триггера
+          self.read_json()
+  
+      def read_json(self):
