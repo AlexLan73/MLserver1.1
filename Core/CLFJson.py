@@ -24,7 +24,7 @@ class CLFJson:
         if name in self.dclf:
             with self.lock:             # self.lock.acquire() ....  # self.lock.release()
                 x = self.dclf[name]
-            return x
+	        return x
         else:
             return None
 
