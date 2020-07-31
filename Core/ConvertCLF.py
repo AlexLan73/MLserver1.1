@@ -113,9 +113,22 @@ class ConvertCLF(threading.Thread):
             for it in self._name_file_datax_clf:
                 print(" ------   {} <<<====".format(it))
                 __dan_clf = self.run_clf_text(it)
+<<<<<<< .merge_file_a04092
+<<<<<<< HEAD
                 __z = str(__dan_clf["rename clf"][1]).split(".")[0]
                 self._all_file[__z] = self.copy.deepcopy(__dan_clf)
                 file1 = self.path_clf + "\\" + __dan_clf["rename clf"][1]
+=======
+
+
+                self._all_file[Path(__dan_clf["rename clf"][1]).stem] = self.copy.deepcopy(__dan_clf)
+                file1 = self.path_clf+"\\"+__dan_clf["rename clf"][1]
+>>>>>>> adccf38... #23 Остановился на сравнении дат, для поиска и формирование номера триггера
+=======
+                __z = str(__dan_clf["rename clf"][1]).split(".")[0]
+                self._all_file[__z] = self.copy.deepcopy(__dan_clf)
+                file1 = self.path_clf + "\\" + __dan_clf["rename clf"][1]
+>>>>>>> .merge_file_a18644
 
                 self._clf_json.set_all(self._all_file)
                 self._clf_json.write_json()

@@ -18,6 +18,7 @@ from Core.CountInitialData import *
 from Core.ConvertCLF import *
 from Core.CLFJson import *
 from Core.ALLClexport import *
+from Core.TriggerNum import *
 
 # pyinstaller -F Convert.py
 
@@ -66,6 +67,11 @@ if __name__ == "__main__":
     _clf_json = CLFJson(StatDan.__getItem__("path_work") + "\\clf.json")
     StatDan.__setItem__("iclf_json", _clf_json)
 
+    data_trigger, trigger_data  = TriggerNum(StatDan.__getItem__("path_work"))
+    _clf_json.set("data_trigger", data_trigger)
+    _clf_json.set("trigger_data", trigger_data)
+    _clf_json.write_json()
+
     _countInitialData = CountInitialData(StatDan.__getItem__("path_work"))
     _is_rename = False  # True переименовать файлы False
     if _is_rename:
@@ -82,7 +88,7 @@ if __name__ == "__main__":
     _dop_config = DopConfig(_rw)
     _config.set(_dop_config.CarName)
 
-    _clf_json.set("Logger", _dop_config.NameLogger)
+    _clf_json.set("LoggerConfig", _dop_config.NameLogger)
     _clf_json.write_json()
 
     _readxml = ReadXml(_dop_config.path_common, _dop_config.dir_analysis)

@@ -3,11 +3,16 @@ import threading
 
 class CLFJson:
     import copy, os, json
+
     def __init__(self, path_file):
         self.path_file = path_file
         self._is_new = False
         self.dclf = dict()
+<<<<<<< HEAD
         self.lock = threading.Lock()    # self.lock.release()
+=======
+        self.lock = threading.Lock()  # self.lock.release()
+>>>>>>> adccf38... #23 Остановился на сравнении дат, для поиска и формирование номера триггера
         self.read_json()
 
     def read_json(self):
@@ -20,9 +25,14 @@ class CLFJson:
         self._is_new = False
 
     def get(self, name):
+<<<<<<< HEAD
         if name in self.dclf:
             with self.lock:
                 x = self.dclf[name]
+=======
+        if name in self.dclf:  # self.lock.acquire() ....  # self.lock.release()
+            x = self.dclf[name]
+>>>>>>> adccf38... #23 Остановился на сравнении дат, для поиска и формирование номера триггера
             return x
         else:
             return None
@@ -46,6 +56,7 @@ class CLFJson:
                 f.write(self.json.dumps(dan_json))
 
     def read(self, file):
+<<<<<<< HEAD
         with self.lock:
             with open(file, 'r') as json_file:
                 try:
@@ -53,3 +64,12 @@ class CLFJson:
                     return self.dclf
                 except:
                     pass
+=======
+        with open(file, 'r') as json_file:
+            try:
+                with self.lock:
+                    self.dclf = self.json.load(json_file)
+                return self.dclf
+            except:
+                pass
+>>>>>>> adccf38... #23 Остановился на сравнении дат, для поиска и формирование номера триггера
