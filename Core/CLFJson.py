@@ -38,6 +38,10 @@ class CLFJson:
         if name in self.dclf:  # self.lock.acquire() ....  # self.lock.release()
             x = self.dclf[name]
 >>>>>>> adccf38... #23 Остановился на сравнении дат, для поиска и формирование номера триггера
+=======
+        if name in self.dclf:  # self.lock.acquire() ....  # self.lock.release()
+            x = self.dclf[name]
+>>>>>>> origin/RenameMDFfile
             return x
         else:
             return None
