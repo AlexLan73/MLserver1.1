@@ -17,14 +17,14 @@ class RenameMDF(threading.Thread):
         path_files_mdf = r"E:\MLserver\data\PS33SED\log\2020-06-30_15-21-49\MDF"
         self.clf = clf
 
-        __data_trigger:dict = copy.deepcopy(self.clf.dclf["data_trigger"])
+#        __data_trigger:dict = copy.deepcopy(self.clf.dclf["data_trigger"])
 
         self.__data_trigger = dict()
         self.maska1_datatime = r'%Y-%m-%d %H:%M:%S.%f'
         self.maska2_datatime = r'%d.%m.%Y %H:%M:%S.%f'
-        for key, val in __data_trigger.items():
-            __datatime = datetime.strptime(key, self.maska1_datatime)
-            self.__data_trigger[__datatime] = copy.deepcopy(val)
+#        for key, val in __data_trigger.items():
+#            __datatime = datetime.strptime(key, self.maska1_datatime)
+#            self.__data_trigger[__datatime] = copy.deepcopy(val)
 
         self.is_work = is_work
         self.queve_dir = Queue()
@@ -68,12 +68,13 @@ class RenameMDF(threading.Thread):
                 if len(__mem) > 2:
                     __trigget = "_Trigger"
 
-                    __datatime__start = datetime.strptime(__mem["Start"], self.maska2_datatime)
-                    __datatime__end = datetime.strptime(__mem["End"], self.maska2_datatime)
+                    __triggerX = __mem.get(["TriggerX"].dict())
+
+                    for key, val in __triggerX.items():
+                        __trigget += "_({})".format(val[0])
+
+                    print("  __trigget => ",__trigget)
                     k=1
-
-
-
                 _name_file = __d["Car name"] + "_(" + __start + ")_(" + __end + ")_" + _f00x + __trigget + __ext
 
                 if not(self.__test_read_file(__path_file)):
