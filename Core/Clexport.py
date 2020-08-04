@@ -70,7 +70,7 @@ class ClexportXX(threading.Thread):
                     _info["path_out"] = config_dir["path_out"]
                     _info["process"] = -2
                     _info["error"] = -1000
-                    _info["repeat"] = 0
+                    _info["repeat"] = 6
                     _info["maska_exsport"] = config_dir["maska_exsport"]
                     queve_dir.put([_id, copy.deepcopy(_info)])
 
@@ -122,7 +122,7 @@ class ClexportXX(threading.Thread):
         __maska = _info["maska_exsport"]
         __path_dit_clf = _info["file_clf"]  # self._rws.path_sourse + "\\" + key
         __path_out = _info["path_out"]
-        _info["repeat"] += 1
+        _info["repeat"] -= 1
 
         _path_MLServer = self.test_environment_windows()
 #        os.chdir(r"C:\Program Files (x86)\GIN\MLserver")
@@ -142,7 +142,7 @@ class ClexportXX(threading.Thread):
             _queve_log.put(_log_start + "   код завершения {}".format(return_code))
             _queve_log.put(_log_start + "  проблема с записью на диск  ")
             _info["error"] = 30
-            _info["process"] = 0
+            _info["process"] = 1
             return
 
         try:
@@ -150,7 +150,7 @@ class ClexportXX(threading.Thread):
         except:
             _queve_log.put(_log_start + " -200 The program stopped working with a fatal error ")
             _info["error"] = -200
-            _info["process"] = -1
+            _info["process"] = 1
             _queve_log.put(_log_start + " выход по ошибки проблемма в CLexport.exe")
 
             with self._lock:
@@ -241,11 +241,11 @@ class ClexportXX(threading.Thread):
                 if _count_clf_files == sum([val["process"] for val in info.values()]):
                     break
 
-                for key, val in info.items():
-                    _info = val
-                    if _info["error"] != -1000:
-                        _info["process"] = 1
-                    info[key] = _info
+                # for key, val in info.items():
+                #     _info = val
+                #     if _info["error"] != -1000:
+                #         _info["process"] = 1
+                #     info[key] = _info
 
         self.is_export = False
         self.is_convert = False

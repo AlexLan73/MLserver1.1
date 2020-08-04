@@ -118,12 +118,32 @@ if __name__ == "__main__":
 #    _clexport.join()
 
     _key = "MDF"
+    _key_prog = {_key: None}
     _export = _clexport.get_key_export(_key)
     _maxpool = 5
     _timewait =20
-    _clexportxx =  ClexportXX(_key, _export, _maxpool, _timewait)
-    _clexportxx.start()
-    _clexportxx.join()
+
+    for key, val in _key_prog.items():
+            _key_prog[key] =  ClexportXX(_key, _export, _maxpool, _timewait)
+
+    # запускаем поток
+    for key, val in _key_prog.items():
+        try:
+            val.start()
+        except:
+            pass
+
+    # ожидаем завершения потоков
+    for key, val in _key_prog.items():
+        try:
+            val.join()
+        except:
+            pass
+
+
+#    _clexportxx =  ClexportXX(_key, _export, _maxpool, _timewait)
+#    _clexportxx.start()
+#    _clexportxx.join()
 
     k = 1
 
