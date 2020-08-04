@@ -119,10 +119,9 @@ if __name__ == "__main__":
 
     _key = "MDF"
     _export = _clexport.get_key_export(_key)
-    _is_work_clf =False
     _maxpool = 5
     _timewait =20
-    _clexportxx =  ClexportXX(_key, _export, _is_work_clf, _maxpool, _timewait)
+    _clexportxx =  ClexportXX(_key, _export, _maxpool, _timewait)
     _clexportxx.start()
     _clexportxx.join()
 

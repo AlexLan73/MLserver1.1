@@ -26,10 +26,12 @@ class ClexportXX(threading.Thread):
     def __countCLF(self):
         return len(list(Path(self.path_work + "\\CLF\\.").glob('*.clf')))
 
-    def __init__(self, _key, _export, _is_work_clf, maxpool=5, timewait=20):
+    def __init__(self, _key, _export, maxpool=5, timewait=20):
         threading.Thread.__init__(self)
         self._lock = threading.Lock()
-        self._is_work_clf = _is_work_clf
+
+        self._is_work_clf = StatDan.__getItem__("is_lrf")
+
         self._key = _key
         self.config_export = _export
 
@@ -195,7 +197,7 @@ class ClexportXX(threading.Thread):
             if _count_filesWork < 0:
                 self._time.set()
 
-            self._is_work_clf = self._is_work_clf and self._time.is_uprav
+            self._is_work_clf =  StatDan.__getItem__("is_lrf") and self._time.is_uprav
 
             if queve_dir.empty():
                 time.sleep(0.1)
@@ -275,58 +277,3 @@ class ClexportXX(threading.Thread):
             return "EC_Compile 56 During compilation of the configuration an error occurred."
         else:
             return "NOT kod ERROR."
-
-# # ==========  CLEXPORT ====================================
-# def run_clexport(self, bconvert=True):
-#     logger = logging.getLogger("exampleApp.RunProgram.run_clexport")
-#     logger.info(" start  function CLEXPORT конвертируем в MDF и в прочее ")
-#
-#     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#     def __convert_dan(self, __path_clexport, _key_dir):
-#         logger = logging.getLogger("exampleApp.RunProgram.run_clexport.__path_clexport")
-#         logger.info(" Вызываем CLexsport ")
-#
-#         for key, val in _key_dir.items():
-#             __path_dit = self._rws.path_sourse + "\\" + key
-#             if self.os.path.isdir(__path_dit):
-#                 for it_file in __file_clf:
-#                     __val01 = str(val).replace("file_clf", it_file)
-#                     __val = __val01.replace("my_dir", __path_dit)
-#                     __common = __path_clexport + __val
-#                     logger.info(" Командная строка к CLexsport  " + __common)
-#
-#                     try:
-#                         p = self.Popen(__common, stdout=self.PIPE, stderr=self.STDOUT, bufsize=1)
-#                     except:
-#                         logger.critical(" The program stopped working with a fatal error ")
-#                         self.sys.exit(-200)
-#
-#                     try:
-#                         with p.stdout, open(self._rws.log_file_mdf, 'ab') as file:
-#                             for line in iter(p.stdout.readline, b''):
-#                                 print(line),
-#                                 file.write(line)
-#                                 logger.info(line)
-#                         p.wait()
-#                         return_code = p.returncode
-#                         print(" код завершения  - ", return_code)
-#                         logger.info("   код завершения {}".format(return_code))
-#                         __error_name = self._error_prog(return_code)
-#                         logger.info(__error_name)
-#                     except:
-#                         logger.warning("  Проблема с записью в файл log_file_mdf.txt")
-#
-#     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#     logger.info(" запуск функции find_file_ext_clf() - поиск всех clf файлов")
-#     __file_clf = self.find_file_ext_clf()
-#     if len(__file_clf) == 0:
-#         logger.error(" - Нет файлов с расширением clf в каталоге \\CLF ")
-#         return
-#     self._rws.cd(self._rws._mlserver)
-#     __path_clexport = "clexport.exe"
-#
-#     _key_dir = {key: val for key, val in self._rws.dir_key.items() if len(val) > 0}
-#     # формируем DataXF00X  <-----
-#     if bconvert:
-#         __convert_dan(self, __path_clexport, _key_dir)
-#

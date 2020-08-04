@@ -133,13 +133,16 @@ class ConvertCLF(threading.Thread):
 
             self._name_file_datax_clf = self.__test__files_clf()
             self.__count_files = len(self._name_file_datax_clf)
+        StatDan.__setItem__("is_lrf", False)
 
     def run(self):
         self.__count_files = 0
+        StatDan.__setItem__("is_lrf", True)
         while (StatDan.__getItem__("is_lrf")) or (self.__count_files > 0):
             self._name_file_datax_clf = self.__test__files_clf()
             self.__count_files = len(self._name_file_datax_clf)
             self.run1()
+
 
     # ***********  run_clf_text  ********************
     def run_clf_text(self, file):

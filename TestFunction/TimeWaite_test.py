@@ -41,6 +41,10 @@ if __name__ == "__main__":
     ls =[1,1,1,1,1,1]
     print(len(ls), "    ",sum(ls))
     count = 5
+
+    z =*ls
+    
+
     _is_work = True
     _time = TimeWait(count, _is_work)
 
