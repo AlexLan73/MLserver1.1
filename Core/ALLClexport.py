@@ -3,9 +3,11 @@ import threading
 
 from Core.StatDan import *
 from Core.ReadWrite import *
+from Core.Clexport import *
 
 from multiprocessing import Queue
 from subprocess import Popen, PIPE, STDOUT
+
 
 class ALLClexport(threading.Thread):
     import os, sys, copy, glob, json, time
@@ -13,9 +15,10 @@ class ALLClexport(threading.Thread):
     import logging
 #    from multiprocessing import Process, Queue
 
-    def __init__(self, config_export: dict, siglog_config_basa):
+    def __init__(self, _config: dict, siglog_config_basa):
         threading.Thread.__init__(self)
-        self.config_export = config_export
+        self._config = _config
+        self.config_export = _config.clexport
         self.logger = self.logging.getLogger("exampleApp.Clexport.__init__")
 
         self.path_work = StatDan.__getItem__("path_work")
@@ -31,6 +34,8 @@ class ALLClexport(threading.Thread):
         self.queve = Queue()
 
         self.log_file_basa = self.path_work + "\\LOG\\Log_Clexport_"
+        self._pool = _config.all_config["pool"]
+        self._timewail = _config.all_config["timewait"]
 
     def copy_to_dir(self, s):
         self.llogger = logging.getLogger("exampleApp.copy_to_dir")
@@ -60,25 +65,28 @@ class ALLClexport(threading.Thread):
                     print("  fprint  ===>>> ", q.get())
 
     def run(self):
-        # запуск потока записи логов во время конвертации
+#        запуск потока записи логов во время конвертации
         is_logg = True
         _fprint = threading.Thread(target=self.__fprint_logg, args=(self, self.queve, is_logg), daemon=True)  # , daemon=True
         _fprint.start()
 
-        # загружаем функции для потока
         for key, val in self._key_prog.items():
-            self._key_prog[key] = ClexportXX(key, self.config_export[key], self.queve)
+            self._key_prog[key] =  ClexportXX(key,  self.config_export, self._pool, self._timewail)
 
         # запускаем поток
         for key, val in self._key_prog.items():
-            if not (None in val):
-                # val.start();
-                val.run()
+            try:
+                val.start()
+            except:
+                pass
 
         # ожидаем завершения потоков
         for key, val in self._key_prog.items():
-            if not (None in val):
+            try:
                 val.join()
+            except:
+                pass
+
 
     def get_key_export(self, key):
         return self.config_export[key]

@@ -120,6 +120,11 @@ class ClexportXX(threading.Thread):
             _info = copy.deepcopy(info[_id])
 
         __maska = _info["maska_exsport"]
+
+        if "dict" in str(type(__maska)):
+            __maska = list(__maska.values())[0]
+
+
         __path_dit_clf = _info["file_clf"]  # self._rws.path_sourse + "\\" + key
         __path_out = _info["path_out"]
         _info["repeat"] -= 1

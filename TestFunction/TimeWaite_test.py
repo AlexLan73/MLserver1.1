@@ -37,13 +37,20 @@ class TimeWait(threading.Thread):
             self.is_wait = True
 
 if __name__ == "__main__":
+    _maska=""
+    __maska ={"MDF":"1q2w3e4r5"}
+    if "dict" in str(type(__maska)):
+        print("dict   ",type(__maska))
+        _maska = list(__maska.values())[0]
+    else:
+        print("----")
+    z =list(__maska.values())[0]
 
     ls =[1,1,1,1,1,1]
     print(len(ls), "    ",sum(ls))
     count = 5
 
-    z =*ls
-    
+
 
     _is_work = True
     _time = TimeWait(count, _is_work)
