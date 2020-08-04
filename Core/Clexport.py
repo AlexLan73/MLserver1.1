@@ -98,6 +98,23 @@ class ClexportXX(threading.Thread):
                 time.sleep(0.1)
         return True
 
+    def test_environment_windows(self):
+#        logger = logging.getLogger("exampleApp.ReadWriteMLserver.test_environment_windows")
+#        logger.info(" start - ReadWriteMLserver.__init__")
+
+        self._mlserver = str(self.os.environ.get("MLSERVER", ""))
+
+        if len(self._mlserver) <= 0:
+            print("Не прописана системная переменная MLSERVER -> путь к каталогу \n "
+                  " к примеру C:\Program Files (x86)\GIN\MLserver")
+#            logger.critical("Не прописана системная переменная MLSERVER -> путь к каталогу")
+            self.sys.exit(-2)
+        else:
+            pass
+#            logger.info(" Системная переменная MLSERVER -> путь к каталогу - прописана ")
+        return self._mlserver
+
+
     def __convert_dan(self, _id, info, _queve_log):
         with self._lock:
             _info = copy.deepcopy(info[_id])
@@ -107,7 +124,9 @@ class ClexportXX(threading.Thread):
         __path_out = _info["path_out"]
         _info["repeat"] += 1
 
-        os.chdir(r"C:\Program Files (x86)\GIN\MLserver")
+        _path_MLServer = self.test_environment_windows()
+#        os.chdir(r"C:\Program Files (x86)\GIN\MLserver")
+        os.chdir(_path_MLServer)
         p0 = __maska.replace("file_clf", __path_dit_clf)
         p1 = str(p0).replace("my_dir", __path_out)
         _commanda = "CLexport.exe " + p1
