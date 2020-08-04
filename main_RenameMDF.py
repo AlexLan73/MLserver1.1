@@ -11,10 +11,9 @@ if __name__ == "__main__":
     _clf_json = CLFJson(StatDan.__getItem__("path_work") + "\\clf.json")
     StatDan.__setItem__("iclf_json", _clf_json)
 
-    ext: str = '*.mdf'
-
-    is_work = True
-    _renamemdf = RenameMDF(StatDan.__getItem__("path_work"),  _clf_json, ext, is_work)
+    path_MDF =  r"E:\MLserver\data\PS33SED\log\2020-06-30_15-21-49\MDF"
+    is_work = True      #clf, dir_filesXX, is_work
+    _renamemdf = RenameMDF(_clf_json, path_MDF, is_work)
     _renamemdf.run1()
     while True:
         time.sleep(1.5)

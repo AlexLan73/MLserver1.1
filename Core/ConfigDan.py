@@ -63,6 +63,9 @@ class ConfigDan:
                 _config = self.config_car[car_name]
                 __set_default(self, _config)
                 logger.info(" - загрузка конфигурации под конкретную машину - {} ".format(car_name))
+            else:
+                __set_default(self, self.all_config)
+                logger.info(" - загрузка общей конфигурации ")
 
         else:
             __set_default(self, self.all_config)
