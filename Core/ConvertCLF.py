@@ -105,7 +105,7 @@ class ConvertCLF(threading.Thread):
 
     def run1(self):
 
-        while self.__count_files > 0:
+        while (StatDan.__getItem__("is_lrf")) or (self.__count_files > 0):
             #  две строчки нужны для синхронизации с обычным режимом
             self._name_file_datax_clf = self.__test__files_clf()
             self.__count_files = len(self._name_file_datax_clf)
@@ -133,7 +133,7 @@ class ConvertCLF(threading.Thread):
 
             self._name_file_datax_clf = self.__test__files_clf()
             self.__count_files = len(self._name_file_datax_clf)
-        StatDan.__setItem__("is_lrf", False)
+#        StatDan.__setItem__("is_lrf", False)
 
     def run(self):
         self.__count_files = 0
@@ -142,6 +142,7 @@ class ConvertCLF(threading.Thread):
             self._name_file_datax_clf = self.__test__files_clf()
             self.__count_files = len(self._name_file_datax_clf)
             self.run1()
+            self.__count_files = len(self._name_file_datax_clf)
 
 
     # ***********  run_clf_text  ********************
@@ -284,19 +285,3 @@ class ConvertCLF(threading.Thread):
         self.logger.info(__info)
         self.logger.info("   информация была сконвертирована и записана в clf.json ")
         return __dan_clf
-
-    # ==========  RENAMES_CLF ====================================+
-    def rename_files(self):
-        logger = logging.getLogger("exampleApp.RunProgram.rename_files")
-        logger.info("  Start function rename_files ")
-        logger.info("    rename files clf  данные из  clf.json")
-
-        __clf_json = self._rws.read_dict_json(self._rws.path_sourse + "\\clf.json")
-        __path_clf = self._rws.path_sourse + "\\CLF"
-        self._rws.cd(__path_clf)
-        __ls_clf = [x for x in self.os.listdir() if ".clf" in x]
-        for it in __ls_clf:
-            __name = it.split(".clf")[0]
-            new_name = __clf_json[__name]["rename clf"]
-            self.os.rename(new_name[0], new_name[1])
-            logger.info("  --  " + new_name[1])

@@ -21,8 +21,7 @@ class CountInitialData:
             self.count_repit = 0
         self.count = _count
         self.count_repit += 1
-        return  self.count
-
+        return self.count
 
     def __all_files(self, maska=""):  # для переименованиея  maska=~D
         matches = []
@@ -38,7 +37,7 @@ class CountInitialData:
 
     def rename(self):
         try:
-            self.shutil.rmtree( self.path_sourse + "\\CLF")     # удалить каталог CLF
+            self.shutil.rmtree(self.path_sourse + "\\CLF")  # удалить каталог CLF
         except:
             pass
 
@@ -76,19 +75,19 @@ class CountInitialData:
         if self.os.path.isfile(path0):
             try:
                 with open(path0) as f:
-                        pass
+                    pass
 
                 self.os.rename(path0, path1)
 
             except:
-                    self.logger.warning(" - файл {}  занят другой программой или не сущест ".format(path0))
+                self.logger.warning(" - файл {}  занят другой программой или не сущест ".format(path0))
         else:
             self.logger.warning(" - файл {} не существует ".format(path0))
 
     def del_initial_data(self):
         import shutil
 
-        if not(self.os.path.isdir(self.path_sourse + "\\clf")):
+        if not (self.os.path.isdir(self.path_sourse + "\\clf")):
             return
 
         count_files_clf = len(self.os.listdir(self.path_sourse + "\\clf"))

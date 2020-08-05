@@ -34,3 +34,12 @@ class ViewProces:
             path_start_process = list(_sls)
 
         return count, all_process, path_start_process
+
+
+# def process_test():
+#     _process = ViewProces()
+#     _process.proces1()
+#     count, all_process, _ls = _process.find_process('chrome.exe')
+#     print("  кол-во запущенных программ {} ".format(count))
+#     for i, it in enumerate(all_process):
+#         print(" {}   {}".format(i, it))
