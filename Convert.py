@@ -20,6 +20,8 @@ from Core.CLFJson import *
 from Core.ALLClexport import *
 #from Core.ConvertAll import *
 from Core.Clexport import *
+from pathlib import Path    # https://python-scripts.com/pathlib
+from Core.TimeWait import *
 
 
 # pyinstaller -F Convert.py
@@ -95,19 +97,34 @@ if __name__ == "__main__":
     StatDan.__setItem__("path_commonт", _dop_config.path_common)
 
     _infdec = LrfDec(_config.lrf_dec)
+    _infdec.start()  # _infdec.run()
+
+#    StatDan.__setItem__("is_lrf", True)
+
     _convertCLF = ConvertCLF()
 
-    _infdec.start()  # _infdec.run()
+    _is_uprav = True
+    _time = TimeWait(20, _is_uprav)
+    _time.set()
+
+    while True:
+        if len(list(Path(StatDan.__getItem__("path_work")).glob("*.clf")))>0:
+            break
+
+        time.sleep(0.5)
+        if not _time.is_uprav:
+            print("Нет данных CLF")
+            sys.exit(-10)
 
     _convertCLF.start()  # _convertCLF.run1()
 
-    i = -1
-    while StatDan.__getItem__("is_lrf"):
-        i += 1
-        print(" {} -- * - * - * -".format(i))
-        time.sleep(1)
+    # i = -1
+    # while StatDan.__getItem__("is_lrf"):
+    #     i += 1
+    #     print(" {} -- * - * - * -".format(i))
+    #     time.sleep(1)
 
-    _convertCLF.join()
+#    _convertCLF.join()
 
     _countInitialData.call()
     if _countInitialData.count <= 0:
@@ -115,6 +132,11 @@ if __name__ == "__main__":
 
     _clexport =  ALLClexport(_config, _readxml.siglog_config_basa)
     _clexport.start()
+
+    _infdec.join()  # _infdec.run()
+
+    _convertCLF.join()  # _convertCLF.run1()
+
     _clexport.join()
 
 

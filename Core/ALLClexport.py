@@ -11,9 +11,9 @@ from subprocess import Popen, PIPE, STDOUT
 
 class ALLClexport(threading.Thread):
     import os, sys, copy, glob, json, time
- #   from subprocess import Popen, PIPE, STDOUT
+    #   from subprocess import Popen, PIPE, STDOUT
     import logging
-#    from multiprocessing import Process, Queue
+    #    from multiprocessing import Process, Queue
 
     def __init__(self, _config: dict, siglog_config_basa):
         threading.Thread.__init__(self)
@@ -56,22 +56,22 @@ class ALLClexport(threading.Thread):
             else:
                 self.logger.warning("  у key {} нет данных".format(key))
 
-    def __fprint_logg(self, q, is_logg):
-        while is_logg:
-            if q.empty():
-                time.sleep(0.05)
-            else:
-                while not (q.empty()):
-                    print("  fprint  ===>>> ", q.get())
+    # def __fprint_logg_allclexport(self, q):
+    #     while self.is_logg:
+    #         if q.empty():
+    #             time.sleep(0.25)
+    #         else:
+    #             while not (q.empty()):
+    #                 print("  fprint  ===>>> ", q.get())
 
     def run(self):
-#        запуск потока записи логов во время конвертации
-        is_logg = True
-        _fprint = threading.Thread(target=self.__fprint_logg, args=(self, self.queve, is_logg), daemon=True)  # , daemon=True
-        _fprint.start()
+        # #        запуск потока записи логов во время конвертации
+        # self.is_logg = True
+        # _fprint = threading.Thread(target=self.__fprint_logg_allclexport, args=(self.queve), daemon=True)
+        # _fprint.start()
 
         for key, val in self._key_prog.items():
-            self._key_prog[key] =  ClexportXX(key,  self.config_export, self._pool, self._timewail)
+            self._key_prog[key] = ClexportXX(key, self.config_export, self._pool, self._timewail)
 
         # запускаем поток
         for key, val in self._key_prog.items():
@@ -87,6 +87,9 @@ class ALLClexport(threading.Thread):
             except:
                 pass
 
+        self.is_logg = False
 
     def get_key_export(self, key):
         return self.config_export[key]
+
+
