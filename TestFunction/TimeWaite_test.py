@@ -37,6 +37,14 @@ class TimeWait(threading.Thread):
             self.is_wait = True
 
 if __name__ == "__main__":
+    mm="ss"
+#    mm.start()
+
+    try:
+        mm.start()
+    except AttributeError:
+        pass
+
     _maska=""
     __maska ={"MDF":"1q2w3e4r5"}
     if "dict" in str(type(__maska)):

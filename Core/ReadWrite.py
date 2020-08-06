@@ -2,7 +2,7 @@ class ReadWrite:
     import os
 
     def __init__(self, *args, **kwargs):
-        print(" ==-- START class ReadWrite --==")
+#        print(" ==-- START class ReadWrite --==")
         self.path_work = kwargs.get("PathWork", self.os.getcwd())
 
     def _cd(self, path: str):

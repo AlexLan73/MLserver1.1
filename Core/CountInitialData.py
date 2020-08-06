@@ -6,7 +6,7 @@ class CountInitialData:
 
     def __init__(self, path_sourse):
         self.logger = logging.getLogger("exampleApp.ReadXml.convert_to_ini")
-        self.logger.info(" Разбор ini файла ")
+#        self.logger.info(" Разбор ini файла ")
 
         self.path_sourse = path_sourse
         self.count = 0

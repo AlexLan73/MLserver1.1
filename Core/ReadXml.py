@@ -125,7 +125,6 @@ class ReadXml:
 
     def convert_to_ini(self, **kwargs):
         logger = logging.getLogger("exampleApp.ReadXml.convert_to_ini")
-        logger.info(" Разбор ini файла ")
 
         dan = kwargs.get("dan", {})
         dan_err = kwargs.get("dan_err", {})
@@ -134,6 +133,8 @@ class ReadXml:
         if len(dan) <= 0:
             logger.critical(" нет словоря с данными  для конвертации ")
             return s
+
+#        logger.info(" Разбор ini файла ")
 
         if len(dan_err) > 0:
             for key, val in dan_err.items():

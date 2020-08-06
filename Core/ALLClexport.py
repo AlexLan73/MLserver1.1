@@ -1,17 +1,16 @@
-from Core.CountInitialData import *
 import threading
-
-from Core.StatDan import *
-from Core.ReadWrite import *
-from Core.Clexport import *
-
 from multiprocessing import Queue
 from subprocess import Popen, PIPE, STDOUT
 
+from Core.Clexport import *
+from Core.CountInitialData import *
+from Core.ReadWrite import *
+from Core.StatDan import *
+
 
 class ALLClexport(threading.Thread):
-    import os, sys, copy, glob, json, time
-    #   from subprocess import Popen, PIPE, STDOUT
+    import copy
+    import time
     import logging
     #    from multiprocessing import Process, Queue
 
@@ -43,7 +42,7 @@ class ALLClexport(threading.Thread):
             if len(str(val).lower()) > 0:
                 __path = self._key_dir[key]
                 __path_file = __path + "\\" + "siglog_config.ini"  # self.shutil.copy2
-                self.logger.info(" Записать в кталог {}  ".format(__path_file))
+                self.logger.info(f" Записать в кталог {__path}  ")
                 self.logger.info(" Пишем в файл  " + __path_file)
 
                 with open(__path_file, "w") as file:
@@ -56,20 +55,7 @@ class ALLClexport(threading.Thread):
             else:
                 self.logger.warning("  у key {} нет данных".format(key))
 
-    # def __fprint_logg_allclexport(self, q):
-    #     while self.is_logg:
-    #         if q.empty():
-    #             time.sleep(0.25)
-    #         else:
-    #             while not (q.empty()):
-    #                 print("  fprint  ===>>> ", q.get())
-
     def run(self):
-        # #        запуск потока записи логов во время конвертации
-        # self.is_logg = True
-        # _fprint = threading.Thread(target=self.__fprint_logg_allclexport, args=(self.queve), daemon=True)
-        # _fprint.start()
-
         for key, val in self._key_prog.items():
             self._key_prog[key] = ClexportXX(key, self.config_export, self._pool, self._timewail)
 
@@ -91,5 +77,3 @@ class ALLClexport(threading.Thread):
 
     def get_key_export(self, key):
         return self.config_export[key]
-
-

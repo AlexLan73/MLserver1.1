@@ -36,7 +36,7 @@ class Scenario:
         self.thread_inicial = threading.Thread(target=self._thread_inicial)
         self.thread_inicial.start()
 
-        self.thread_read_info = threading.Thread(target=self._thread_read_info)
+        self.thread_read_info = threading.Thread(target=self._thread_read_info, daemon=True )
         self.thread_read_info.start()
 
     def _thread_inicial(self):
@@ -139,3 +139,13 @@ class Scenario:
         self.convert_LrfDec__ = threading.Thread(target=self._convert_LrfDec, args=(), daemon=True)
         self.convert_LrfDec__.start()
 #        self.convert_LrfDec__.join()
+
+    def convert_CLF(self):
+        StatDan.__setItem__("is_lrf", False)
+        self.convertCLF__ = ConvertCLF()
+        self.convertCLF__.start()
+#        self.convertCLF__.join()
+
+    def allclexport(self):
+        self.clexport__ = ALLClexport(self._config, self._readxml.siglog_config_basa)
+        self.clexport__.start()
