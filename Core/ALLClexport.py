@@ -2,10 +2,10 @@ import threading
 from multiprocessing import Queue
 from subprocess import Popen, PIPE, STDOUT
 
-from Core.Clexport import *
-from Core.CountInitialData import *
-from Core.ReadWrite import *
-from Core.StatDan import *
+from .Clexport import *
+from .CountInitialData import *
+from .ReadWrite import *
+from .StatDan import *
 
 
 class ALLClexport(threading.Thread):
@@ -47,7 +47,7 @@ class ALLClexport(threading.Thread):
 
                 with open(__path_file, "w") as file:
                     try:
-                        for it in s[0]:
+                        for it in s:
                             file.write(it)
                     except:
                         self.logger.critical(" Проблема записи в ", file0)

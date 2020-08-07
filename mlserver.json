@@ -2,14 +2,14 @@
   "Car name": {
     "PS0001": {
       "clexport": {
-        "MDF": " -v -~ -o -t -l \"file_clf\" -MB -O  \"my_dir\" SystemChannel=Binlog_GL.ini",
+        "MDF": " -v -o -t -l \"file_clf\" -MB -O  \"my_dir\" SystemChannel=Binlog_GL.ini",
         "ASC_DIAG": " -v -o -t -l  \"file_clf\" -A -ASC -w 50 MB -n CAN9=all Only Channel \"my_dir\" SystemChannel=Binlog_GL.ini "
       },
       "lrf_dec": " -S 20 -L 512 -n -k -v -i "
     }
   },
   "clexport": {
-    "MDF": " -v -~ -o -t -l \"file_clf\" -MB -O  \"my_dir\" SystemChannel=Binlog_GL.ini"
+    "MDF": " -v -o -t -l \"file_clf\" -MB -O  \"my_dir\" SystemChannel=Binlog_GL.ini"
   },
   "clexport1": {
     "MDF": " -v -~ -o -t -l \"file_clf\" -MB -O  \"my_dir\" SystemChannel=Binlog_GL.ini",

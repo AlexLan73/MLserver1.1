@@ -17,7 +17,7 @@ class ReadXml:
 
         _rw = ReadWrite()
         self.siglog_config_basa = []
-        self.siglog_config_basa += [_rw.ReadText(self.path_common + "\\DLL\\" + "siglog_config.ini")]
+        self.siglog_config_basa += _rw.ReadTextBasa0(self.path_common + "\\DLL\\" + "siglog_config.ini")
         self.siglog_config_basa += [self.Catalog_copy_information]
 
         self.copy_siglog_vsysvar(d_err)

@@ -14,9 +14,9 @@ from .CLFJson import *
 
 from .LrfDec import *
 from .ConvertCLF import *
-from Core.ALLClexport import *
-from Core.Clexport import *
-from Core.TimeWait import *
+from .ALLClexport import *
+from .Clexport import *
+from .TimeWait import *
 
 
 class Scenario:
@@ -29,14 +29,14 @@ class Scenario:
 
         self.dan_scenario = dict()
         self.dan_scenario["ind"] = 0
-
+        self._is_read_info = True
         self._lock_read_info = threading.Lock()  # self.lock.release()
         self.is_convert_clf_work_dir = False
 
         self.thread_inicial = threading.Thread(target=self._thread_inicial)
         self.thread_inicial.start()
 
-        self.thread_read_info = threading.Thread(target=self._thread_read_info, daemon=True )
+        self.thread_read_info = threading.Thread(target=self._thread_read_info, daemon=True)
         self.thread_read_info.start()
 
     def _thread_inicial(self):
@@ -75,6 +75,9 @@ class Scenario:
         self._readxml = ReadXml(self._dop_config.path_common, self._dop_config.dir_analysis)
         StatDan.__setItem__("path_commonт", self._dop_config.path_common)
 
+        self.clexport__ = ALLClexport(self._config, self._readxml.siglog_config_basa)
+
+
     def get_count_original_dan(self):
         _countInitialData = CountInitialData(StatDan.__getItem__("path_work"))
         return _countInitialData.count
@@ -97,7 +100,10 @@ class Scenario:
                     _path_clf).exists() else 0
 
                 self.dan_scenario["ind"] += 1
-                k = 1
+
+                if not self._is_read_info:
+                    return
+
             time.sleep(1)
 
     def _convert_LrfDec(self):
@@ -138,14 +144,14 @@ class Scenario:
 
         self.convert_LrfDec__ = threading.Thread(target=self._convert_LrfDec, args=(), daemon=True)
         self.convert_LrfDec__.start()
-#        self.convert_LrfDec__.join()
 
     def convert_CLF(self):
         StatDan.__setItem__("is_lrf", False)
         self.convertCLF__ = ConvertCLF()
         self.convertCLF__.start()
-#        self.convertCLF__.join()
 
     def allclexport(self):
-        self.clexport__ = ALLClexport(self._config, self._readxml.siglog_config_basa)
         self.clexport__.start()
+
+    def set_off_stop_read_info(self):
+        self._is_read_info = False

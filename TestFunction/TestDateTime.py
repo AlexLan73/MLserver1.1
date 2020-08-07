@@ -1,8 +1,16 @@
 
 from datetime import datetime
 from pprint import pprint
+from pathlib import Path
+
 
 if __name__ == "__main__":
+    _x = r"E:\MLserver\data\PS33SED\log\2020-06-30_15-21-49"
+    _root = Path(_x).root
+    _drive = Path(_x).drive
+    _z = r"C:\Program Files (x86)\GIN\MLserver"
+    _ls = list(Path(_z).glob("*.ini"))
+    k=1
 
     xx = dict(short='dict', long='dictionary')
 

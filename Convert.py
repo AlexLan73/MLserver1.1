@@ -85,6 +85,8 @@ if __name__ == "__main__":
     except AttributeError:
         pass
 
+    _scenario.set_off_stop_read_info()
+
     try:
         _scenario.clexport__.join()
     except AttributeError:

@@ -1,38 +1,77 @@
-from Core.CountInitialData import *
 import threading
-
-from Core.StatDan import *
-from Core.ReadWrite import *
-from Core.RenameMDF import *
-from Core.CLFJson import *
-from Core.TimeWait import *
-
-import uuid, glob, time, copy, os
+import time
+import uuid
+import glob
+import copy
+import os
 import pprint
 from pathlib import Path
 
-import threading
-import time
 from concurrent.futures.thread import ThreadPoolExecutor
 from multiprocessing import Queue
 from subprocess import Popen, PIPE, STDOUT
 
+from .CountInitialData import *
+from .StatDan import *
+from .ReadWrite import *
+from .RenameMDF import *
+from .CLFJson import *
+from .TimeWait import *
+
 
 class ClexportXX(threading.Thread):
-    import os, sys, copy, glob, json, time
-    from subprocess import Popen, PIPE, STDOUT
     import logging
+
+#    def fprint_log(self, queve_log):
+    def fprint_log(self):
+        while self.is_convert:
+            time.sleep(0.5)
+            #     or not (queve_log.empty()):
+            # if queve_log.empty():
+            #     time.sleep(0.2)
+            # else:
+            #     while not (queve_log.empty()):
+            #         __log = queve_log.get()
+            #         print("->> {}".format(__log))
+
+    def read_dir_clf(self, config_dir, queve_dir):
+        while config_dir["is_read_files"]:
+            __new_files = list(set(glob.glob(config_dir["path_clr_files"])) - set(
+                config_dir["bfiles"]))  # файлы которые нужно добавить к запуску
+            if len(__new_files) > 0:
+                print("*" * 60)
+                for it_file in __new_files:
+                    _id = uuid.uuid1()
+                    _info = dict()
+                    _info["file_clf"] = it_file
+                    _info["path_out"] = config_dir["path_out"]
+                    _info["process"] = -2
+                    _info["error"] = -1000
+                    _info["repeat"] = 6
+                    _info["maska_exsport"] = config_dir["maska_exsport"]
+                    queve_dir.put([_id, copy.deepcopy(_info)])
+
+                config_dir["bfiles"].extend(__new_files)
+            else:
+                time.sleep(0.2)
+
 
     def __countCLF(self):
         return len(list(Path(self.path_work + "\\CLF\\.").glob('*.clf')))
 
     def __init__(self, _key, _export, maxpool=5, timewait=20):
         threading.Thread.__init__(self)
+        self.is_convert = True
+
         self._lock = threading.Lock()
 
         self._is_work_clf = StatDan.__getItem__("is_lrf")
 
         self._key = _key
+
+        if "dict" in str(type(_export)):
+            _export = list(_export.values())[0]
+
         self.config_export = _export
 
         self.logger = self.logging.getLogger("exampleApp.Clexport.__init__")
@@ -57,36 +96,6 @@ class ClexportXX(threading.Thread):
         self._renamemdf = RenameMDF(_clf_json, path_MDF, self.is_export)
         self._renamemdf.start()
 
-    def read_dir_clf(self, config_dir, queve_dir):
-        while config_dir["is_read_files"]:
-            __new_files = list(set(glob.glob(config_dir["path_clr_files"])) - set(
-                config_dir["bfiles"]))  # файлы которые нужно добавить к запуску
-            if len(__new_files) > 0:
-                print("*" * 60)
-                for it_file in __new_files:
-                    _id = uuid.uuid1()
-                    _info = dict()
-                    _info["file_clf"] = it_file
-                    _info["path_out"] = config_dir["path_out"]
-                    _info["process"] = -2
-                    _info["error"] = -1000
-                    _info["repeat"] = 6
-                    _info["maska_exsport"] = config_dir["maska_exsport"]
-                    queve_dir.put([_id, copy.deepcopy(_info)])
-
-                config_dir["bfiles"].extend(__new_files)
-            else:
-                time.sleep(0.2)
-
-    def fprint_log(self, queve_log):
-        while self.is_convert:
-            if queve_log.empty():
-                time.sleep(0.2)
-            else:
-                while not (queve_log.empty()):
-                    __log = queve_log.get()
-                    print("->> {}".format(__log))
-
     # -------------------------------------------------
 
     def __test_read_file(self, path, n=50):
@@ -99,21 +108,20 @@ class ClexportXX(threading.Thread):
         return True
 
     def test_environment_windows(self):
-#        logger = logging.getLogger("exampleApp.ReadWriteMLserver.test_environment_windows")
-#        logger.info(" start - ReadWriteMLserver.__init__")
+        #        logger = logging.getLogger("exampleApp.ReadWriteMLserver.test_environment_windows")
+        #        logger.info(" start - ReadWriteMLserver.__init__")
 
-        self._mlserver = str(self.os.environ.get("MLSERVER", ""))
+        self._mlserver = str(os.environ.get("MLSERVER", ""))
 
         if len(self._mlserver) <= 0:
             print("Не прописана системная переменная MLSERVER -> путь к каталогу \n "
                   " к примеру C:\Program Files (x86)\GIN\MLserver")
-#            logger.critical("Не прописана системная переменная MLSERVER -> путь к каталогу")
-            self.sys.exit(-2)
+            #            logger.critical("Не прописана системная переменная MLSERVER -> путь к каталогу")
+            sys.exit(-2)
         else:
             pass
-#            logger.info(" Системная переменная MLSERVER -> путь к каталогу - прописана ")
+        #            logger.info(" Системная переменная MLSERVER -> путь к каталогу - прописана ")
         return self._mlserver
-
 
     def __convert_dan(self, _id, info, _queve_log):
         with self._lock:
@@ -121,17 +129,17 @@ class ClexportXX(threading.Thread):
 
         __maska = _info["maska_exsport"]
 
-        if "dict" in str(type(__maska)):
-            __maska = list(__maska.values())[0]
-
-
         __path_dit_clf = _info["file_clf"]  # self._rws.path_sourse + "\\" + key
         __path_out = _info["path_out"]
         _info["repeat"] -= 1
 
         _path_MLServer = self.test_environment_windows()
-#        os.chdir(r"C:\Program Files (x86)\GIN\MLserver")
+        _drive = Path(_path_MLServer).drive
+        os.chdir(_drive)
         os.chdir(_path_MLServer)
+#        zz = Path(_path_MLServer+"\\.")
+#        _ls = len(list(Path(_path_MLServer).glob("*.ini")))
+
         p0 = __maska.replace("file_clf", __path_dit_clf)
         p1 = str(p0).replace("my_dir", __path_out)
         _commanda = "CLexport.exe " + p1
@@ -139,6 +147,7 @@ class ClexportXX(threading.Thread):
         _log_start = " id-->> {} \n ".format(_name)
         _queve_log.put(_log_start + " start convert")
         _queve_log.put(_log_start + _commanda)
+        print("_"*80)
         print(_commanda)
 
         if self.__test_read_file(__path_dit_clf):
@@ -187,8 +196,8 @@ class ClexportXX(threading.Thread):
             info[_id] = copy.deepcopy(_info)
 
     def run(self):
-        queve_dir = Queue()
-        queve_log = Queue()
+        self.queve_dir = Queue()
+        self.queve_log = Queue()
         self.is_convert = True
         path_in = self.path_work + "\\CLF"
         path_out = self.path_work + "\\" + self._key
@@ -202,15 +211,20 @@ class ClexportXX(threading.Thread):
             is_read_files=True
         )
 
-        _read_dir = threading.Thread(target=self.read_dir_clf, args=(config_dir, queve_dir),
-                                     daemon=True)  # , daemon=True
-        _read_dir.start()
-        _print_log = threading.Thread(target=self.fprint_log, args=(queve_log),
-                                      daemon=True)  # , daemon=True
-        _print_log.start()
+        _read_dir = ThreadPoolExecutor(max_workers=1)
+        _x0 = _read_dir.submit(self.read_dir_clf,  config_dir, self.queve_dir)  # ,  daemon=True
+
+        _print_log = ThreadPoolExecutor(max_workers=1)
+        _x0 = _read_dir.submit(self.fprint_log)                                 # ,  daemon=True
+
+        # _read_dir = threading.Thread(target=self.read_dir_clf, args=(config_dir, self.queve_dir), daemon=True)  # , daemon=True
+        # _read_dir.start()
+        # _print_log = threading.Thread(target=self.fprint_log, args=())  # , daemon=True
+        # _print_log.start()
 
         info = dict()
 
+        #        executor = ThreadPoolExecutor(max_workers=5)
         executor = ThreadPoolExecutor(max_workers=5)
 
         self._time.set()
@@ -221,18 +235,18 @@ class ClexportXX(threading.Thread):
             if _count_filesWork < 0:
                 self._time.set()
 
-            self._is_work_clf =  StatDan.__getItem__("is_lrf") and self._time.is_uprav
+            self._is_work_clf = StatDan.__getItem__("is_lrf") and self._time.is_uprav
 
-            if queve_dir.empty():
+            if self.queve_dir.empty():
                 time.sleep(0.1)
             else:
-                while not (queve_dir.empty()):
+                while not (self.queve_dir.empty()):
                     print("-" * 80)
-                    __dan = queve_dir.get()
+                    __dan = self.queve_dir.get()
                     __id = __dan[0]
                     with self._lock:
                         info[__id] = copy.deepcopy(__dan[1])
-                    b = executor.submit(self.__convert_dan, __id, info, queve_log)
+                    b = executor.submit(self.__convert_dan, __id, info, self.queve_log)
 
                 pprint.pprint(info, width=1)
 
@@ -255,6 +269,8 @@ class ClexportXX(threading.Thread):
         self.is_export = False
         self.is_convert = False
         self._renamemdf.join()
+        self._renamemdf.is_work = False
+
 
         # ==========  ERROR PROG  ====================================+
 

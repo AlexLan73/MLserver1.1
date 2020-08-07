@@ -1,21 +1,22 @@
 import threading
 from multiprocessing import Process, Queue
 from concurrent.futures.thread import ThreadPoolExecutor
-from pathlib import Path    # https://python-scripts.com/pathlib
-import copy                  # https://docs.python.org/3/library/pathlib.html
+from pathlib import Path  # https://python-scripts.com/pathlib
+import copy  # https://docs.python.org/3/library/pathlib.html
 from Core.TimeWait import *
 
 import time
 from datetime import datetime
 
+
 class RenameMDF(threading.Thread):
     import os, time
     import logging
 
-    def __init__(self, clf, dir_filesXX, is_work, timewait=10):  # def __init__(self):
+    def __init__(self, clf, dir_filesXX, is_work, timewait=40):  # def __init__(self):
         threading.Thread.__init__(self)
 
-#        dir_filesXX = r"E:\MLserver\data\PS33SED\log\2020-06-30_15-21-49\MDF"
+        #        dir_filesXX = r"E:\MLserver\data\PS33SED\log\2020-06-30_15-21-49\MDF"
         self.clf = clf
 
         self.dir_filesXX = dir_filesXX
@@ -23,7 +24,7 @@ class RenameMDF(threading.Thread):
         self.maska1_datatime = r'%Y-%m-%d %H:%M:%S.%f'
         self.maska2_datatime = r'%d.%m.%Y %H:%M:%S.%f'
 
-        self.is_work = is_work
+        self.is_work = True
         self.queve_dir = Queue()
         self._lockRenameMDF = threading.Lock()
 
@@ -78,8 +79,8 @@ class RenameMDF(threading.Thread):
                     for key, val in __triggerX.items():
                         __trigget += "_({})".format(val[0])
 
-                    print("  __trigget => ",__trigget)
-                    k=1
+                    print("  __trigget => ", __trigget)
+
                 _name_file = __d["Car name"] + "_(" + __start + ")_(" + __end + ")_" + _f00x + __trigget + __ext
 
                 if not (self.__test_read_file(__path_file)):
@@ -91,18 +92,18 @@ class RenameMDF(threading.Thread):
         from pathlib import Path
         import re
         ls_dir = []
-
+        _old_count_files = -1
         while True:
             _all_files = list(Path(dir_filesXX).glob("*.*"))  # '*.mdf'
             if len(_all_files) >= 2:
-                __files = [x for x in _all_files if not(".ini" in str(x).lower())]
+                __files = [x for x in _all_files if not (".ini" in str(x).lower())]
                 ext = Path(__files[0]).suffix
                 break
             else:
                 time.sleep(1)
 
-        while True:
-            _all_files = list(Path(dir_filesXX).glob('*'+ext))  # '*.mdf'
+        while self.is_work:
+            _all_files = list(Path(dir_filesXX).glob('*' + ext))  # '*.mdf'
             _files = [x for x in _all_files if
                       len(re.findall(r'\dF', str(x))) > 0 and len(re.findall(r'_F', str(x))) == 0]
             __new_files = list(set(_files) - set(ls_dir))  # файлы которые нужно добавить к запуску
@@ -111,7 +112,7 @@ class RenameMDF(threading.Thread):
                 ls_dir = []
 
             if len(__new_files) > 0:
-                print("*-*-" * 30)
+                #  print("*-*-" * 30)
                 for it_file in __new_files:
                     if self.__test_read_file(it_file):
                         print(it_file)
@@ -120,8 +121,12 @@ class RenameMDF(threading.Thread):
             else:
                 time.sleep(1)
 
-            print("  --  всего files - {} \n не обработанно файлов - {} \n    новых = {}"
-                  .format(len(_all_files), len(_files), len(__new_files)))
+            # print("  --  всего files - {} \n не обработанно файлов - {} \n    новых = {}"
+            #       .format(len(_all_files), len(_files), len(__new_files)))
+            _count_files = len(_files)
+            if _old_count_files != _count_files:
+                print(f"  RENAME не обработанно файлов - {_count_files} ")
+                _old_count_files = _count_files
 
     def __test_read_file(self, path):
         try:

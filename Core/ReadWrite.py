@@ -2,7 +2,7 @@ class ReadWrite:
     import os
 
     def __init__(self, *args, **kwargs):
-#        print(" ==-- START class ReadWrite --==")
+        #        print(" ==-- START class ReadWrite --==")
         self.path_work = kwargs.get("PathWork", self.os.getcwd())
 
     def _cd(self, path: str):
@@ -41,6 +41,15 @@ class ReadWrite:
         _encoding = self.__read_type_files(path_to_file)
         with open(path_to_file, encoding=_encoding) as f:  # utf-8-sig   #utf-8  , encoding='utf-8-sig'
             myList = [line.replace("\n", "") for line in f]
+        return myList
+
+    def ReadTextBasa0(self, path_to_file=""):
+        b1 = self.os.path.isfile(path_to_file)
+        if not (self.os.path.isfile(path_to_file)):
+            return -1
+        _encoding = self.__read_type_files(path_to_file)
+        with open(path_to_file, encoding=_encoding) as f:  # utf-8-sig   #utf-8  , encoding='utf-8-sig'
+            myList = [line for line in f]
         return myList
 
     def write_list(self, file, s):
@@ -91,7 +100,7 @@ class ReadWrite:
         if self.os.path.isfile(path0):
             try:
                 with open(path0) as f:
-                        pass
+                    pass
 
                 self.os.rename(path0, path1)
                 return 0
