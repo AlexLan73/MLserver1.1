@@ -1,14 +1,16 @@
-from Core.ReadWrite import *
-
-from Core.StatDan import *
-
 import logging
+import os, sys, glob
+
+from .ReadWrite import *
+from .StatDan import *
 
 
 class DopConfig:
-    import os, sys, glob
 
     def __init__(self, rw: ReadWrite):
+        self.logger = logging.getLogger("exampleApp.DopConfig.__init__")
+        self.logger.info("DopConfig.__init__")
+
         self._rw = rw
         self.path_work = self._rw.path_work
         self.path_common = self.find_common(self.path_work, "#COMMON")
@@ -20,8 +22,7 @@ class DopConfig:
         self.path_name_Configuration(self.name_config[0])
 
     def find_common(self, path, _find):
-        logger = logging.getLogger("exampleApp.ReadWriteMLserver.find_common")
-        logger.info(" Осуществляем поиск каталога #COMMON")
+        self.logger.info(" ReadWriteMLserver.find_common - Осуществляем поиск каталога #COMMON")
 
         _path = path.lower()
         _find = _find.lower()
@@ -29,39 +30,37 @@ class DopConfig:
         if i > 0:
             _path0 = _path[:i] + _find
 
-            path_ls = self.os.path.dirname(_path0).split("\\")
-            self.os.chdir(path_ls[0])
-            self.os.chdir(_path0)
+            path_ls = os.path.dirname(_path0).split("\\")
+            os.chdir(path_ls[0])
+            os.chdir(_path0)
             self.path_common = _path0
-            logger.info(" Нашли #COMMON")
+            set.logger.info(" Нашли #COMMON")
             return self.path_common
         else:
             _find = _find.upper()
-            path_ls = self.os.path.dirname(_path).split("\\")
-            #            self.os.chdir(path_ls[0])
-            self.os.chdir(_path)
+#            path_ls = os.path.dirname(_path).split("\\")
+            os.chdir(_path)
 
             while len(_path) > 2:
-                self.os.chdir(_path)
-                ls = self.os.listdir()
+                os.chdir(_path)
+                ls = os.listdir()
                 if _find in ls:
                     self.path_common = _path + "\\" + _find
                     return self.path_common
                 else:
                     k = _path.rfind("\\")
                     _path = _path[:k]
-            logger.critical("  Не смогла найти каталог #COMMON")
+            self.logger.critical("  Не смогла найти каталог #COMMON")
             print("Отсутствует директория {} ".format(_find))
-            self.sys.exit(-4)
-            return "-4"
+            sys.exit(-4)
 
     def file_config_from_ml_rt(self):
-        logger = logging.getLogger("exampleApp.DopConfig.file_config_from_ml_rt")
+        self.logger.info("DopConfig.file_config_from_ml_rt")
         __path = self.path_work + "\\" + "ml_rt.ini"
         print(__path)
 
-        if self.os.path.isfile(__path):
-            logger.info(" чтение файла " + __path)
+        if os.path.isfile(__path):
+            self.logger.info(" чтение файла " + __path)
         ls = self._rw.ReadText(__path)
         ls1 = [x for x in ls if "filename" in x.lower()]
         if len(ls1) <= 0:
@@ -79,13 +78,13 @@ class DopConfig:
         self.CarName = _CarName[0].split("=")[1]
         return _ls
 
-        _s = "В каталоге {} нет файла ml_rt.ini".format(self.path_sourse)
-        logger.critical(_s)
+        _s = f"В каталоге {self.path_sourse} нет файла ml_rt.ini"
+        self.logger.critical(_s)
         print(_s)
-        self.sys.exit(-3)
+        sys.exit(-3)
 
     def path_name_Configuration(self, name_congig):
-        logger = logging.getLogger("exampleApp.ReadWriteMLserver.path_name_Configuration")
+        self.logger.info("DopConfig.path_name_Configuration")
 
         def __test_datetime(self, _dan):
             import operator
@@ -122,36 +121,36 @@ class DopConfig:
 
         __path = self.path_common + "\\Configuration\\" + name_congig
 
-        __ls = self.glob.glob(__path + "\\*analysis.zip")
+        __ls = glob.glob(__path + "\\*analysis.zip")
         print(" Поиск analysis.zip  !!!!")
         print("   путь -> ", __path)
         for it in __ls:
             print("            {} ".format(it))
 
-        logger.info(" Читаем  конфигурации " + __path)
+        self.logger.info(" Читаем  конфигурации " + __path)
 
         name_file_analysis_zip = __test_datetime(self, {x: x for x in __ls if "analysis.zip" in x})
         print("   найдено -> ", name_file_analysis_zip)
 
         if name_file_analysis_zip == "":
             print("Нет файла с расширением  analysis ")
-            logger.critical("Нет файла с расширением  analysis ")
+            self.logger.critical("Нет файла с расширением  analysis ")
 
-            self.sys.exit(-5)
+            sys.exit(-5)
 
-        ___s = {x: x for x in self.os.walk(__path).__next__()[1]}
+        ___s = {x: x for x in os.walk(__path).__next__()[1]}
         name_dir_analysis = __test_datetime(self, ___s)
 
         __z = name_file_analysis_zip.split(".zip")[0]
         if __z in name_dir_analysis:
             self.dir_analysis = __path + "\\" + name_dir_analysis
-            logger.info(" Файл analysis найден ")
+            self.logger.info(" Файл analysis найден ")
             return self.dir_analysis
 
         __path = __z
         self.zip_extractall(name_file_analysis_zip, __path)
         self.dir_analysis = __path
-        logger.info(" Файл analysis найден ")
+        self.logger.info(" Файл analysis найден ")
         return self.dir_analysis
 
     def zip_extractall(self, path_file, path_dir):

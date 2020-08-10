@@ -16,6 +16,6 @@
     "ASC_DIAG": " -v -o -t -l \"file_clf\" -A -ASC -w 50 MB -n CAN9=all Only Channel \"my_dir\" SystemChannel=Binlog_GL.ini "
   },
   "lrf_dec": " -S 20 -L 512 -n -k -v -i ",
-  "pool": 5,
+  "pool": 10,
   "timewait": 20
 }

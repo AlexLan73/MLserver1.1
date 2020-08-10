@@ -1,24 +1,27 @@
-import threading
 from multiprocessing import Queue
-from subprocess import Popen, PIPE, STDOUT
+import threading
+import logging
+import logging.config
 
-from .Clexport import *
-from .CountInitialData import *
-from .ReadWrite import *
 from .StatDan import *
+from .Clexport import *
+from .ReadWrite import *
+from .ConfigDan import *
+from .CountInitialData import *
 
 
 class ALLClexport(threading.Thread):
-    import copy
-    import time
-    import logging
-    #    from multiprocessing import Process, Queue
 
-    def __init__(self, _config: dict, siglog_config_basa):
+    def __init__(self, _config: ConfigDan, siglog_config_basa):
+        # инициализация переменных ALLClexport
         threading.Thread.__init__(self)
-        self._config = _config
-        self.config_export = _config.clexport
-        self.logger = self.logging.getLogger("exampleApp.Clexport.__init__")
+
+        self.logger = logging.getLogger("exampleApp.ALLClexport.__init__")
+        self.logger.info("инициализация переменных ALLClexport")
+
+        self.is_logg = True                                     # нужно обратить внимание
+        self._config = _config                                  # конфигурация
+        self.config_export = _config.clexport                   # маска экспорта MDF ......
 
         self.path_work = StatDan.__getItem__("path_work")
         self.path_common = StatDan.__getItem__("path_commonт")
@@ -37,7 +40,9 @@ class ALLClexport(threading.Thread):
         self._timewail = _config.all_config["timewait"]
 
     def copy_to_dir(self, s):
-        self.llogger = logging.getLogger("exampleApp.copy_to_dir")
+        self.logger.info("exampleApp.copy_to_dir")
+        self.logger.info(" copy_to_dir -  копируем файл конфигурации siglog_config.ini в каталог по маске")
+
         for key, val in self.config_export.items():
             if len(str(val).lower()) > 0:
                 __path = self._key_dir[key]
@@ -50,30 +55,51 @@ class ALLClexport(threading.Thread):
                         for it in s:
                             file.write(it)
                     except:
-                        self.logger.critical(" Проблема записи в ", file0)
+                        self.logger.critical(" Проблема записи в ", __path_file)
 
             else:
                 self.logger.warning("  у key {} нет данных".format(key))
 
     def run(self):
+        self.logger.info("ALLClexport.run инициализация потоков по KEY (типа MDF)")
         for key, val in self._key_prog.items():
             self._key_prog[key] = ClexportXX(key, self.config_export, self._pool, self._timewail)
 
         # запускаем поток
+        self.logger.info("ALLClexport.run запуск потоков")
         for key, val in self._key_prog.items():
             try:
                 val.start()
-            except:
+            except ValueError:
                 pass
 
         # ожидаем завершения потоков
+        self.logger.info("ALLClexport.run ожидание завершения потоков")
         for key, val in self._key_prog.items():
             try:
                 val.join()
-            except:
+            except ValueError:
+                pass
+# ------------------------------------------------
+        # ожидаем завершения потоков
+        self.logger.info("ALLClexport.run ожидание завершения потоков")
+        for key, val in self._key_prog.items():
+            try:
+                val.renamemdf.join()
+            except ValueError:
                 pass
 
-        self.is_logg = False
+        for key, val in self._key_prog.items():
+            try:
+                val.renamemdf.time.clear()
+                val.renamemdf.is_work = False
+            except ValueError:
+                pass
+
+        self.logger.info("ALLClexport.run все потоки завершены")
+        StatDan.__setItem__("is_clexport", False)
+
+        print("ALLClexport --  exit")
 
     def get_key_export(self, key):
         return self.config_export[key]

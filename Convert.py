@@ -1,7 +1,7 @@
+import logging
 import logging.config
 import sys
 
-from Core.Clexport import *
 from Core.InArguments import *
 from Core.LogFileSet import *
 from Core.Scenario import *
@@ -58,40 +58,9 @@ if __name__ == "__main__":
     _scenario = Scenario()
 
     _scenario.thread_inicial.join()
-    # _scenario.thread_read_info.join()
 
-    f1typeint = lambda x: x[0] if "tuple" in str(type(x)) else x
+    _scenario.run_scenario()
 
-    if f1typeint(_scenario.dan_scenario["original"]) > 0:
-        # запускаем конвертацию  LrfDec
-        _scenario.convert_LrfDec()
-    elif f1typeint(_scenario.dan_scenario["work_dir_clf"]) > 0:
-        # запускаем конвертацию  LrfDec
-        _scenario.convert_CLF()
+    print("+"*40,"\n","+"*15," END  ","+"*15)
 
-    xtime_wait_files_dir_clf = _scenario.dan_scenario["ind"]
-    while (_scenario.dan_scenario["ind"] - xtime_wait_files_dir_clf) <= 30:
-        if f1typeint(_scenario.dan_scenario["CLF_dir_clf"]) > 0:
-            _scenario.allclexport()
-            break
 
-    try:
-        _scenario.convert_LrfDec__.join()
-    except AttributeError:
-        pass
-
-    try:
-        _scenario.convertCLF__.join()
-    except AttributeError:
-        pass
-
-    _scenario.set_off_stop_read_info()
-
-    try:
-        _scenario.clexport__.join()
-    except AttributeError:
-        pass
-
-    _scenario.logger.info("END нормальное завершение программы")
-    k=1
-    sys.exit(0)

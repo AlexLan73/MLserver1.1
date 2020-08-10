@@ -1,22 +1,24 @@
-import threading
-from multiprocessing import Process, Queue
+from multiprocessing import Queue
 from concurrent.futures.thread import ThreadPoolExecutor
-from pathlib import Path  # https://python-scripts.com/pathlib
-import copy  # https://docs.python.org/3/library/pathlib.html
-from Core.TimeWait import *
-
-import time
 from datetime import datetime
+from pathlib import Path  # https://python-scripts.com/pathlib # https://docs.python.org/3/library/pathlib.html
+
+import logging
+import logging.config
+import threading
+import os, time, copy
+
+from .TimeWait import *
+from .StatDan import *
 
 
 class RenameMDF(threading.Thread):
-    import os, time
-    import logging
 
     def __init__(self, clf, dir_filesXX, is_work, timewait=40):  # def __init__(self):
         threading.Thread.__init__(self)
+        self.logger = logging.getLogger("exampleApp.RenameMDF.__init__")
+        self.logger.info("RenameMDF.__init__")
 
-        #        dir_filesXX = r"E:\MLserver\data\PS33SED\log\2020-06-30_15-21-49\MDF"
         self.clf = clf
 
         self.dir_filesXX = dir_filesXX
@@ -29,13 +31,15 @@ class RenameMDF(threading.Thread):
         self._lockRenameMDF = threading.Lock()
 
         self._is_uprav = True
-        self._time = TimeWait(timewait, self._is_uprav)
+        self.time = TimeWait(timewait, self._is_uprav)
 
         x = threading.Thread(
             target=RenameMDF.read_dir_mdf, args=(self, dir_filesXX, self.queve_dir,), daemon=True)
         x.start()
 
     def run(self):
+        self.logger.info("RenameMDF.RUN  запуск потока")
+
         def __convert_data_time(self, s: str):
             __s0 = s.split(" ")
             __s01 = __s0[0].split(".")
@@ -43,15 +47,15 @@ class RenameMDF(threading.Thread):
             return __s01[2] + "-" + __s01[1] + "-" + __s01[0] + "_" + __s1
 
         _old_count_files = 0
-        while True:
-            __i = len(self.os.listdir(self.dir_filesXX))
+        while self.is_work or self.queve_dir.qsize()>0:
+            __i = len(os.listdir(self.dir_filesXX))
             if __i > _old_count_files:
                 _old_count_files = __i
-                self._time.set()
+                self.time.set()
 
             if self.queve_dir.empty():
                 time.sleep(0.5)
-                if not self._time.is_uprav:
+                if not self.time.is_uprav:
                     return
                 continue
 
@@ -89,6 +93,8 @@ class RenameMDF(threading.Thread):
                 Path(__path_file).rename(str(__path_files) + "\\" + _name_file)
 
     def read_dir_mdf(self, dir_filesXX, queve_dir):
+        self.logger.info("RenameMDF.read_dir_mdf  потока  чтение каталога MDF files")
+
         from pathlib import Path
         import re
         ls_dir = []
@@ -102,7 +108,7 @@ class RenameMDF(threading.Thread):
             else:
                 time.sleep(1)
 
-        while self.is_work:
+        while self.is_work or StatDan.__getItem__("is_clexport"):
             _all_files = list(Path(dir_filesXX).glob('*' + ext))  # '*.mdf'
             _files = [x for x in _all_files if
                       len(re.findall(r'\dF', str(x))) > 0 and len(re.findall(r'_F', str(x))) == 0]
@@ -112,7 +118,6 @@ class RenameMDF(threading.Thread):
                 ls_dir = []
 
             if len(__new_files) > 0:
-                #  print("*-*-" * 30)
                 for it_file in __new_files:
                     if self.__test_read_file(it_file):
                         print(it_file)
@@ -121,12 +126,16 @@ class RenameMDF(threading.Thread):
             else:
                 time.sleep(1)
 
-            # print("  --  всего files - {} \n не обработанно файлов - {} \n    новых = {}"
-            #       .format(len(_all_files), len(_files), len(__new_files)))
             _count_files = len(_files)
-            if _old_count_files != _count_files:
+            if _old_count_files != _count_files and not(_count_files == 0):
                 print(f"  RENAME не обработанно файлов - {_count_files} ")
                 _old_count_files = _count_files
+
+            if not(self.is_work) and _count_files==0:
+                break
+
+        print("   -------  END  RenameMDF RUN ")
+
 
     def __test_read_file(self, path):
         try:

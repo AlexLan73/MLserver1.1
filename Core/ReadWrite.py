@@ -35,7 +35,7 @@ class ReadWrite:
         return detector.result['encoding']
 
     def ReadText(self, path_to_file=""):
-        b1 = self.os.path.isfile(path_to_file)
+        # b1 = self.os.path.isfile(path_to_file)
         if not (self.os.path.isfile(path_to_file)):
             return -1
         _encoding = self.__read_type_files(path_to_file)
@@ -44,7 +44,7 @@ class ReadWrite:
         return myList
 
     def ReadTextBasa0(self, path_to_file=""):
-        b1 = self.os.path.isfile(path_to_file)
+        # b1 = self.os.path.isfile(path_to_file)
         if not (self.os.path.isfile(path_to_file)):
             return -1
         _encoding = self.__read_type_files(path_to_file)

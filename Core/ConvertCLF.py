@@ -1,21 +1,22 @@
 from pathlib import Path
 from datetime import datetime
-from Core.CountInitialData import *
-import threading, re
+from subprocess import Popen, PIPE, STDOUT
 
-from Core.StatDan import *
-from Core.ReadWrite import *
+import threading, re, copy, glob, time
+import logging
+import logging.config
 
+from .StatDan import *
+from .ReadWrite import *
+from .CountInitialData import *
 
 class ConvertCLF(threading.Thread):
-    import os, sys, copy, glob, json, time
-    from subprocess import Popen, PIPE, STDOUT
-    import logging
 
     def __init__(self):
         threading.Thread.__init__(self)
 
-        self.logger = self.logging.getLogger("exampleApp.ConvertCLF.__init__")
+        self.logger = logging.getLogger("exampleApp.ConvertCLF.__init__")
+        self.logger.info("инициализация переменных ConvertCLF")
 
         self.path_work = StatDan.__getItem__("path_work")
         self.path_common = StatDan.__getItem__("path_commonт")
@@ -38,7 +39,7 @@ class ConvertCLF(threading.Thread):
         self.logger.info("   запускаем программу " + self._exe)
         self.logger.info("   данные из " + self.path_work)
 
-        self._name_file_datax_clf = self.glob.glob(self.path_work + "\\*.clf")
+        self._name_file_datax_clf = glob.glob(self.path_work + "\\*.clf")
 
         self.__maska0_datatime = r'%d.%m.%Y %H:%M:%S.%f'
         self.__maska1_datatime = r'%Y-%m-%d %H:%M:%S.%f'
@@ -74,7 +75,7 @@ class ConvertCLF(threading.Thread):
                 __mtr = __tr.split("=")
                 self._triggerName[__mtr[0]] = __mtr[1]
 
-        self._all_file["TriggerName"]= self.copy.deepcopy(self._triggerName)
+        self._all_file["TriggerName"]= copy.deepcopy(self._triggerName)
 
     def triggerNum(self):
         fname = Path(self.path_work + "\\TextLog.txt")
@@ -98,7 +99,7 @@ class ConvertCLF(threading.Thread):
         # модуль для теста файлов сформированные clf
         # если программа работает (формирования) то берем все кроме -1
 
-        _name_file_datax_clf = self.glob.glob(self.path_work + "\\*.clf")
+        _name_file_datax_clf = glob.glob(self.path_work + "\\*.clf")
         if StatDan.__getItem__("is_lrf"):
             _name_file_datax_clf = _name_file_datax_clf[:-1]
         return _name_file_datax_clf
@@ -115,7 +116,7 @@ class ConvertCLF(threading.Thread):
                 __dan_clf = self.run_clf_text(it)
 
                 __z = str(__dan_clf["rename clf"][1]).split(".")[0]
-                self._all_file[__z] = self.copy.deepcopy(__dan_clf)
+                self._all_file[__z] = copy.deepcopy(__dan_clf)
                 file1 = self.path_clf + "\\" + __dan_clf["rename clf"][1]
 
                 self._clf_json.set_all(self._all_file)
@@ -129,11 +130,10 @@ class ConvertCLF(threading.Thread):
                     else:
                         k0 += 1
                         self.logger.warning("  проблема с переносом файла в {} ".format(file1))
-                        self.time.sleep(0.1)
+                        time.sleep(0.1)
 
             self._name_file_datax_clf = self.__test__files_clf()
             self.__count_files = len(self._name_file_datax_clf)
-#        StatDan.__setItem__("is_lrf", False)
 
     def run(self):
         self.__count_files = len(self._name_file_datax_clf)
@@ -143,6 +143,8 @@ class ConvertCLF(threading.Thread):
             self.__count_files = len(self._name_file_datax_clf)
             self.run1()
             self.__count_files = len(self._name_file_datax_clf)
+
+        StatDan.__setItem__("is_lrf", False)
 
 
     # ***********  run_clf_text  ********************
@@ -164,7 +166,7 @@ class ConvertCLF(threading.Thread):
 
             output1 = subprocess.check_output(_param)
 
-            p = self.Popen(_param, stdout=self.PIPE, stderr=self.STDOUT, bufsize=1)
+            p = Popen(_param, stdout=PIPE, stderr=STDOUT, bufsize=1)
 
             with p.stdout, open(self.log_file, 'ab') as file:
                 for line in iter(p.stdout.readline, b''):
@@ -222,12 +224,12 @@ class ConvertCLF(threading.Thread):
                                 if len(__d)>0:
                                     __d_key = list(__d.keys())
                                     for it in __d_key: del self._clf_data_trigger[datetime.strptime(it, self.__maska1_datatime)]
-                                    __mem["TriggerX"] = self.copy.deepcopy(__d)
+                                    __mem["TriggerX"] = copy.deepcopy(__d)
 
                                 __mem["End"] = __sdatatime_end
                                 break
                         i += 1
-                        __mem_fxx[__fxx] = self.copy.deepcopy(__mem)
+                        __mem_fxx[__fxx] = copy.deepcopy(__mem)
                         continue
                     if "--- File Comment -" in it:
                         __is = False
@@ -252,7 +254,7 @@ class ConvertCLF(threading.Thread):
                         __dan_clf["Odometer"] = filtr01(it)
                     i += 1
 
-            __dan_clf["Memory"] = self.copy.deepcopy(__mem_fxx)
+            __dan_clf["Memory"] = copy.deepcopy(__mem_fxx)
 
             __dan_clf["rename clf"] = []
             __dan_clf["rename clf"] += [__name_file]

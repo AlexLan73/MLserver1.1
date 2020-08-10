@@ -1,7 +1,8 @@
 from pathlib import Path
-from Core.ReadWrite import *
-import re
 from datetime import datetime
+import re
+
+from .ReadWrite import *
 
 
 def TriggerNum(work_dir):
