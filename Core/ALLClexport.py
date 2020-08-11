@@ -90,6 +90,9 @@ class ALLClexport(threading.Thread):
                 pass
 
         for key, val in self._key_prog.items():
+            val.renamemdf.join()
+
+        for key, val in self._key_prog.items():
             try:
                 val.renamemdf.time.clear()
                 val.renamemdf.is_work = False
