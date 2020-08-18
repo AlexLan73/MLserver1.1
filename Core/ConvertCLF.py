@@ -14,7 +14,7 @@ class ConvertCLF(threading.Thread):
 
     def __init__(self):
         threading.Thread.__init__(self)
-
+        self.lock = threading.Lock()  # self.lock.release()
         self.logger = logging.getLogger("exampleApp.ConvertCLF.__init__")
         self.logger.info("инициализация переменных ConvertCLF")
 
@@ -223,7 +223,10 @@ class ConvertCLF(threading.Thread):
 
                                 if len(__d)>0:
                                     __d_key = list(__d.keys())
-                                    for it in __d_key: del self._clf_data_trigger[datetime.strptime(it, self.__maska1_datatime)]
+                                    for it0 in __d_key:
+                                        it = it0 if it0.find(".")>0 else it0+".0000"
+                                        del self._clf_data_trigger[datetime.strptime(it, self.__maska1_datatime)]
+
                                     __mem["TriggerX"] = copy.deepcopy(__d)
 
                                 __mem["End"] = __sdatatime_end
