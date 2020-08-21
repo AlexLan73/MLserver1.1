@@ -43,6 +43,9 @@ class Scenario:
         self.dthreading = OrderedDict()
 
     def _thread_inicial(self):
+        # если есть clf.jsomn удалить
+        __path = Path(StatDan.__getItem__("path_work")+"\\clf.json")
+        __path.unlink( missing_ok = True )
 
         self.dan_scenario["original"] = self.get_count_original_dan()  # кол-во (исходных) файлов
 
