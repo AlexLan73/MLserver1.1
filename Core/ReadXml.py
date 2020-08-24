@@ -1,8 +1,10 @@
-from pprint import pprint
-from .ReadWrite import *
-
 import logging
 import copy, os
+
+from pprint import pprint
+from .ReadWrite import *
+from .StatDan import *
+from pathlib import Path, PurePath
 
 
 class ReadXml:
@@ -13,7 +15,9 @@ class ReadXml:
 
         self.dir_analysis = path_analiz_dan
         self.path_common = path_common
-        self._mlserver = self.test_environment_windows()
+#        self._mlserver = self.test_environment_windows()
+        self._mlserver = StatDan.__getItem__("path_mlserver")
+
         self.maska_zip = "Analysis.gla"
         d0, d_err = self.read_xml_dan(path_analiz_dan + "\\" + self.maska_zip)
         self.Catalog_copy_information = self.convert_to_ini(dan=d0, dan_err=d_err, path=path_analiz_dan)
@@ -82,6 +86,7 @@ class ReadXml:
         return dan, dan_err
 
     def copy_siglog_vsysvar(self, d_err: dict):
+        from shutil import copyfile
         self.logger.info(" function copy_siglog_vsysvar ")
 
         for key, val in d_err.items():
@@ -92,10 +97,11 @@ class ReadXml:
                 if os.path.isfile(__src):
                     # 'CANoeCANalyzer.vsysvar' - существует копируем на сервер
                     try:
-                        self.shutil.copy2(__src, self._mlserver)
+                        _name = PurePath(__src).name
+                        copyfile(__src, self._mlserver+"\\"+_name)
                         __src_CANoeCANalyzer_vsysvar = self._mlserver + "\\" + __name_file
                         if os.path.isfile(__src_CANoeCANalyzer_vsysvar):
-                            self.rename_file(__src_CANoeCANalyzer_vsysvar, self._mlserver + "\\" + "siglog.vsysvar")
+                            os.replace(__src_CANoeCANalyzer_vsysvar, self._mlserver + "\\" + "siglog.vsysvar")
                             self.logger.info(
                                 " Копирование и переименование " + self._mlserver + "\\" + "siglog.vsysvar")
 
@@ -112,19 +118,19 @@ class ReadXml:
                     except:
                         print(" Не удалось скопировать, нужны права администратора")
 
-    def test_environment_windows(self):
-        self.logger.info(" ReadXml.test_environment_windows")
-
-        self._mlserver = str(os.environ.get("MLSERVER", ""))
-
-        if len(self._mlserver) <= 0:
-            print("Не прописана системная переменная MLSERVER -> путь к каталогу \n "
-                  " к примеру C:\Program Files (x86)\GIN\MLserver")
-            self.logger.critical("Не прописана системная переменная MLSERVER -> путь к каталогу")
-            self.sys.exit(-2)
-        else:
-            self.logger.info(" Системная переменная MLSERVER -> путь к каталогу - прописана ")
-        return self._mlserver
+    # def test_environment_windows(self):
+    #     self.logger.info(" ReadXml.test_environment_windows")
+    #
+    #     self._mlserver = str(os.environ.get("MLSERVER", ""))
+    #
+    #     if len(self._mlserver) <= 0:
+    #         print("Не прописана системная переменная MLSERVER -> путь к каталогу \n "
+    #               " к примеру C:\Program Files (x86)\GIN\MLserver")
+    #         self.logger.critical("Не прописана системная переменная MLSERVER -> путь к каталогу")
+    #         self.sys.exit(-2)
+    #     else:
+    #         self.logger.info(" Системная переменная MLSERVER -> путь к каталогу - прописана ")
+    #     return self._mlserver
 
     def convert_to_ini(self, **kwargs):
         self.logger.info("ReadXml.cconvert_to_ini")

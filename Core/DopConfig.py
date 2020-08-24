@@ -15,6 +15,11 @@ class DopConfig:
         self.path_work = self._rw.path_work
         self.path_common = self.find_common(self.path_work, "#COMMON")
         self.path_lrf_dec = self.path_common + "\\DLL\\lrf_dec.exe"
+        self.path_mlserver = self.path_common + "\\DLL\\MLserver"
+        StatDan.__setItem__("path_commonт", self.path_common)
+        StatDan.__setItem__("path_mlserver", self.path_mlserver)
+
+
         self.CarName = ""
 
         self.name_config = self.file_config_from_ml_rt()
@@ -38,7 +43,6 @@ class DopConfig:
             return self.path_common
         else:
             _find = _find.upper()
-#            path_ls = os.path.dirname(_path).split("\\")
             os.chdir(_path)
 
             while len(_path) > 2:

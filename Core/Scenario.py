@@ -89,7 +89,6 @@ class Scenario:
         # грузим класс ReadXml для 1. разбора XML; 2. настройки конвертации
         self.logger.info(" Разбор XML файла  ")
         self._readxml = ReadXml(self._dop_config.path_common, self._dop_config.dir_analysis)
-        StatDan.__setItem__("path_commonт", self._dop_config.path_common)
 
         self.dthreading["LrfDec"] = threading.Thread(target=self._convert_LrfDec, args=(), daemon=True)
         self.dthreading["convertCLF"] = ConvertCLF()

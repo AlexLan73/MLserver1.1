@@ -80,6 +80,7 @@ class ClexportXX(threading.Thread):
         self.path_work = StatDan.__getItem__("path_work")
         self.path_common = StatDan.__getItem__("path_commonт")
         self._config: ConfigDan = StatDan.__getItem__("config")
+        self.path_mlserver = StatDan.__getItem__("path_mlserver")
 
         self.count = self.__countCLF()
         self.maxpool = maxpool
@@ -108,16 +109,16 @@ class ClexportXX(threading.Thread):
                 time.sleep(0.5)
         return True
 
-    def test_environment_windows(self):
-        self.logger.info("- ClexportXX.test_environment_windows() \n -- чтение где лежит MLserver ")
-        if len(self._mlserver) <= 0:
-            print("Не прописана системная переменная MLSERVER -> путь к каталогу \n "
-                  " к примеру C:\Program Files (x86)\GIN\MLserver")
-            self.logger.critical("Не прописана системная переменная MLSERVER -> путь к каталогу")
-            sys.exit(-2)
-        else:
-            self.logger.info(" Системная переменная MLSERVER -> путь к каталогу - прописана ")
-        return self._mlserver
+    # def test_environment_windows(self):
+    #     self.logger.info("- ClexportXX.test_environment_windows() \n -- чтение где лежит MLserver ")
+    #     if len(self._mlserver) <= 0:
+    #         print("Не прописана системная переменная MLSERVER -> путь к каталогу \n "
+    #               " к примеру C:\Program Files (x86)\GIN\MLserver")
+    #         self.logger.critical("Не прописана системная переменная MLSERVER -> путь к каталогу")
+    #         sys.exit(-2)
+    #     else:
+    #         self.logger.info(" Системная переменная MLSERVER -> путь к каталогу - прописана ")
+    #     return self._mlserver
 
     def __convert_dan(self, _id, info, _queve_log):
         self.logger.info("- поток ClexportXX.__convert_dan() \n -- конвертировать в clf файл ")
@@ -130,10 +131,11 @@ class ClexportXX(threading.Thread):
         __path_out = _info["path_out"]
         _info["repeat"] -= 1
 
-        _path_MLServer = self.test_environment_windows()
-        _drive = Path(_path_MLServer).drive
+#        _path_MLServer =  self.test_environment_windows()
+
+        _drive = Path(self.path_mlserver).drive
         os.chdir(_drive)
-        os.chdir(_path_MLServer)
+        os.chdir(self.path_mlserver)
 
         p0 = __maska.replace("file_clf", __path_dit_clf)
         p1 = str(p0).replace("my_dir", __path_out)
