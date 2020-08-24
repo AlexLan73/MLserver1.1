@@ -19,7 +19,6 @@ class DopConfig:
         StatDan.__setItem__("path_commonт", self.path_common)
         StatDan.__setItem__("path_mlserver", self.path_mlserver)
 
-
         self.CarName = ""
 
         self.name_config = self.file_config_from_ml_rt()

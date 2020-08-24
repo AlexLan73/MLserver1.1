@@ -118,20 +118,6 @@ class ReadXml:
                     except:
                         print(" Не удалось скопировать, нужны права администратора")
 
-    # def test_environment_windows(self):
-    #     self.logger.info(" ReadXml.test_environment_windows")
-    #
-    #     self._mlserver = str(os.environ.get("MLSERVER", ""))
-    #
-    #     if len(self._mlserver) <= 0:
-    #         print("Не прописана системная переменная MLSERVER -> путь к каталогу \n "
-    #               " к примеру C:\Program Files (x86)\GIN\MLserver")
-    #         self.logger.critical("Не прописана системная переменная MLSERVER -> путь к каталогу")
-    #         self.sys.exit(-2)
-    #     else:
-    #         self.logger.info(" Системная переменная MLSERVER -> путь к каталогу - прописана ")
-    #     return self._mlserver
-
     def convert_to_ini(self, **kwargs):
         self.logger.info("ReadXml.cconvert_to_ini")
 
@@ -157,3 +143,17 @@ class ReadXml:
         #        print(s)
         self.logger.info(" convert_to_ini отработал ")
         return s
+#  Чтение из окружения Windows
+    # def test_environment_windows(self):
+    #     self.logger.info(" ReadXml.test_environment_windows")
+    #
+    #     self._mlserver = str(os.environ.get("MLSERVER", ""))
+    #
+    #     if len(self._mlserver) <= 0:
+    #         print("Не прописана системная переменная MLSERVER -> путь к каталогу \n "
+    #               " к примеру C:\Program Files (x86)\GIN\MLserver")
+    #         self.logger.critical("Не прописана системная переменная MLSERVER -> путь к каталогу")
+    #         self.sys.exit(-2)
+    #     else:
+    #         self.logger.info(" Системная переменная MLSERVER -> путь к каталогу - прописана ")
+    #     return self._mlserver
