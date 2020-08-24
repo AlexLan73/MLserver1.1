@@ -243,7 +243,7 @@ class ClexportXX(threading.Thread):
                 if _count_clf_files == sum([val["process"] for val in info.values()]):
                     break
 
-        self.queve_log.put("ClexportXX.run() - завершение конвертации ")
+        self.queve_log.put(" Поток  ClexportXX.run() - завершен")
 
         self.is_export = False
         self.is_convert = False

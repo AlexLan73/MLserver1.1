@@ -7,6 +7,7 @@ import logging
 import logging.config
 
 from .StatDan import *
+from .TimeWait import *
 from .ReadWrite import *
 from .CountInitialData import *
 
@@ -105,13 +106,16 @@ class ConvertCLF(threading.Thread):
         return _name_file_datax_clf
 
     def run1(self):
-
-        while (StatDan.__getItem__("is_lrf")) or (self.__count_files > 0):
+        _btime=True
+        _time= TimeWait(10, _btime)
+        _time.set()
+        while (StatDan.__getItem__("is_lrf")) or (self.__count_files > 0) or _time.is_uprav:
             #  две строчки нужны для синхронизации с обычным режимом
             self._name_file_datax_clf = self.__test__files_clf()
             self.__count_files = len(self._name_file_datax_clf)
 
             for it in self._name_file_datax_clf:
+                _time.set()
                 print(" ------   {} <<<====".format(it))
                 __dan_clf = self.run_clf_text(it)
 

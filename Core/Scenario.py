@@ -200,10 +200,10 @@ class Scenario:
                 self.dthreading["clexport"].start()
 #                break
 
-        print("Ждем завершения программы")
-        self.logger.info("Ждем завершения программы")
+#        print("Ждем завершения программы")
+#        self.logger.info("Ждем завершения программы")
 
         self.dthreading["clexport"].join()
         self._is_read_info = False
-        self.logger.info("END  нормальное завершение программы")
+#        self.logger.info("END  нормальное завершение программы")
 

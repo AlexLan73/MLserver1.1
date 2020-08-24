@@ -61,6 +61,6 @@ if __name__ == "__main__":
 
     _scenario.run_scenario()
 
-    print("+"*40,"\n","+"*15," END  ","+"*15)
+#    print("+"*40,"\n","+"*15," END  ","+"*15)
 
 
